@@ -41,7 +41,13 @@ class Program
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
-            options.Authority = "Authority URL";
+            options.Authority = "http://keycloak:8080/realms/dev";
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new()
+            {
+                ValidateAudience = false,
+                ValidIssuers = ["http://keycloak:8080/realms/dev", "http://keycloak.127.0.0.1.nip.io/realms/dev"]
+            };
             options.Events = new JwtBearerEvents
             {
                 OnMessageReceived = context =>
@@ -68,7 +74,7 @@ class Program
 
         app.UseCors(options =>
         {
-            options.WithOrigins("*").DisallowCredentials().WithHeaders("*").WithMethods("*");
+            options.WithOrigins("http://localhost:4200").AllowCredentials().WithHeaders("*").WithMethods("*");
         });
 
         app.UseAuthentication();
