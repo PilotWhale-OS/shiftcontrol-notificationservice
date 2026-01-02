@@ -1,0 +1,20 @@
+services:
+
+  notificationservice:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - EMPTY=empty
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.notificationservice.entrypoints=web
+      - traefik.http.routers.notificationservice.rule=Host(`notificationservice.127.0.0.1.nip.io`)
+      - traefik.http.services.notificationservice.loadbalancer.server.port=8080
+    volumes:
+      - ./config/docker.appsettings.json:/app/appsettings.json
+    networks:
+      - shiftcontrol
+
+networks:
+  shiftcontrol:
+    external: true
