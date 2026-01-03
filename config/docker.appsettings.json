@@ -5,6 +5,17 @@
     }
   },
   "SignalR": {
-    "HostPort": 8080
+    "HostPort": 8080,
+    "AllowedOrigins": [
+      "http://localhost:4200",
+      "http://frontend.127.0.0.1.nip.io"
+    ]
+  },
+  "Jwt": {
+    "Authority": "http://keycloak:8080/realms/dev",
+    "Issuers": [
+      "http://keycloak:8080/realms/dev",
+      "http://keycloak.127.0.0.1.nip.io/realms/dev"
+    ]
   }
 }
