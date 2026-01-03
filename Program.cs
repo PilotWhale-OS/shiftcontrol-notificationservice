@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NotificationService.Hubs.Implementation;
+using NotificationService.Service;
 
 namespace NotificationService;
 
@@ -27,6 +28,7 @@ class Program
             .AddLogging(loggingBuilder => loggingBuilder
                 .AddConfiguration(builder.Configuration.GetSection("Logging"))
                 .AddConsole())
+            .AddScoped<TestService>()
             .BuildServiceProvider();
 
         builder.WebHost.ConfigureKestrel(options =>
@@ -41,12 +43,12 @@ class Program
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
-            options.Authority = "http://keycloak:8080/realms/dev";
+            options.Authority = builder.Configuration.GetRequiredSection("Jwt").GetValue<string>("Authority");
             options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new()
             {
                 ValidateAudience = false,
-                ValidIssuers = ["http://keycloak:8080/realms/dev", "http://keycloak.127.0.0.1.nip.io/realms/dev"]
+                ValidIssuers = builder.Configuration.GetRequiredSection("Jwt:Issuers").Get<string[]>(),
             };
             options.Events = new JwtBearerEvents
             {
@@ -70,11 +72,16 @@ class Program
 
     private static void SetupRoutes(WebApplication app)
     {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
         app.MapHub<TestHub>(HubPrefix + "/testhub");
 
         app.UseCors(options =>
         {
-            options.WithOrigins("http://localhost:4200").AllowCredentials().WithHeaders("*").WithMethods("*");
+            var origins = app.Configuration
+                .GetRequiredSection("SignalR:AllowedOrigins")
+                .Get<string[]>() ?? [];
+            logger.LogDebug("Configuring CORS for origins: {origins}", string.Join(",", origins));
+            options.WithOrigins(origins).AllowCredentials().WithHeaders("*").WithMethods("*");
         });
 
         app.UseAuthentication();

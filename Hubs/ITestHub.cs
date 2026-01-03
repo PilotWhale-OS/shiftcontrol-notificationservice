@@ -6,11 +6,11 @@ namespace NotificationService.Hubs;
 [Hub]
 public interface ITestHub
 {
-    public Task<TestEvent> SendTestEvent(TestEvent testEvent);
+    public Task<TestEventDto> SendTestEvent(TestEventDto testEventDto);
 }
 
 [Receiver]
 public interface ITestHubReceiver
 {
-    public Task TestEventReceived(TestEvent testEvent);
+    public Task TestEventReceived(TestEventDto testEventDto);
 }
