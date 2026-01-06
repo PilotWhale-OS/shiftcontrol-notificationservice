@@ -1,4 +1,4 @@
-namespace ShiftControl.Events
+namespace NotificationService.Generated
 {
 
     public partial class ActivityEvent

@@ -1,7 +1,11 @@
 ﻿﻿using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NotificationService.Classes;
+using NotificationService.Generated;
 using NotificationService.Hubs.Implementation;
+using NotificationService.Notifications;
 using NotificationService.Service;
+using NotificationService.Settings;
 
 namespace NotificationService;
 
@@ -23,13 +27,18 @@ class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services
-            .AddCors()
-            .AddSignalR().Services
-
             .AddLogging(loggingBuilder => loggingBuilder
                 .AddConfiguration(builder.Configuration.GetSection("Logging"))
                 .AddConsole())
-            .AddScoped<TestService>()
+            .AddCors()
+            .AddSignalR().Services
+            .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"))
+            .AddNotificationProcessors(pb => pb
+                .AddProcessor<ActivityEvent, ActivityCreatedNotificationProcessor>("shiftcontrol.activity.created")
+                .Build()
+            )
+            .AddScoped<PushNotificationService>()
+            .AddScoped<EventProcessorService>()
             .AddHostedService<RabbitMqService>()
             .BuildServiceProvider();
 
@@ -75,7 +84,7 @@ class Program
     private static void SetupRoutes(WebApplication app)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        app.MapHub<TestHub>(HubPrefix + "/testhub");
+        app.MapHub<PushNotificationHub>(HubPrefix + "/testhub");
 
         app.UseCors(options =>
         {

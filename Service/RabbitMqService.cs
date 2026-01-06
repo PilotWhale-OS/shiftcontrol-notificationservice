@@ -1,76 +1,57 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using NotificationService.Hubs;
+﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using NotificationService.Hubs.Implementation;
-using NotificationService.Converters;
-using ShiftControl.Events;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using NotificationService.Settings;
 
 namespace NotificationService.Service;
 
-public class RabbitMqService : IHostedService
+public class RabbitMqService(
+    IOptions<RabbitMqSettings> settings,
+    ILogger<RabbitMqService> logger,
+    EventProcessorService eventProcessor) : IHostedService
 {
-    private readonly ILogger<RabbitMqService> _logger;
-    private IConnection _connection;
-    private readonly IConfiguration _configuration;
-    private IChannel _channel;
-
-    public RabbitMqService(IConfiguration configuration, ILogger<RabbitMqService> logger)
-    {
-        _logger = logger;
-        _configuration = configuration;
-    }
+    private IConnection? _connection;
+    private IChannel? _channel;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory()
         {
-            HostName = _configuration.GetValue<string>("RabbitMQ:HostName"),
-            Port = _configuration.GetValue<int>("RabbitMQ:Port"),
-            UserName = _configuration.GetValue<string>("RabbitMQ:UserName"),
-            Password = _configuration.GetValue<string>("RabbitMQ:Password"),
-            //DispatchConsumersAsync = true
+            HostName = settings.Value.HostName,
+            Port = settings.Value.Port,
+            UserName = settings.Value.UserName,
+            Password = settings.Value.Password
         };
-        _connection = await factory.CreateConnectionAsync();
-        _channel = await _connection.CreateChannelAsync();
 
-        //await _channel.ExchangeDeclareAsync("shiftcontrol", ExchangeType.Topic, durable: true);
-        var queueResult = await _channel.QueueDeclareAsync("notificationservice.queue",
+        _connection = await factory.CreateConnectionAsync(cancellationToken);
+        _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+        var queueResult = await _channel.QueueDeclareAsync(
+            "notificationservice.queue",
             durable: true,
             exclusive: false,
-            autoDelete: false);
+            autoDelete: false,
+            cancellationToken: cancellationToken
+        );
 
         await _channel.QueueBindAsync(queue: queueResult.QueueName,
             exchange: "shiftcontrol",
-            routingKey: "shiftcontrol.#");
+            routingKey: "shiftcontrol.#",
+            cancellationToken: cancellationToken
+        );
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += async (model, ea) =>
-        {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+        consumer.ReceivedAsync += eventProcessor.HandleEventAsync;
+        await _channel.BasicConsumeAsync(queueResult.QueueName, false, consumer, cancellationToken);
 
-            if (ea.RoutingKey == "shiftcontrol.activity.created")
-            {
-                var activityEvent = JsonConvert.DeserializeObject<ActivityEvent>(message, new JsonSerializerSettings
-                {
-                    Converters = { new UnixTimestampConverter() }
-                });
-                _logger.LogInformation("Deserialized ActivityEvent: {activityEvent}", activityEvent);
-            }
-        };
-        await _channel.BasicConsumeAsync(queueResult.QueueName, false, consumer);
-
-        _logger.LogInformation("RabbitMQ consumer started.");
+        logger.LogInformation("RabbitMQ consumer started.");
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-        await _channel.CloseAsync();
-        await _connection.CloseAsync();
+        _channel?.CloseAsync(cancellationToken: cancellationToken);
+        _connection?.CloseAsync(cancellationToken: cancellationToken);
+        return Task.CompletedTask;
     }
 }
 
