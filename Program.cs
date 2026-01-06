@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿﻿using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NotificationService.Hubs.Implementation;
 using NotificationService.Service;
@@ -25,10 +25,12 @@ class Program
         builder.Services
             .AddCors()
             .AddSignalR().Services
+
             .AddLogging(loggingBuilder => loggingBuilder
                 .AddConfiguration(builder.Configuration.GetSection("Logging"))
                 .AddConsole())
             .AddScoped<TestService>()
+            .AddHostedService<RabbitMqService>()
             .BuildServiceProvider();
 
         builder.WebHost.ConfigureKestrel(options =>

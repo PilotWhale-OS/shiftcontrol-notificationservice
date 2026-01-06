@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NotificationService.Classes.Dto;
 using TypedSignalR.Client;
 
@@ -6,11 +7,11 @@ namespace NotificationService.Hubs;
 [Hub]
 public interface ITestHub
 {
-    public Task<TestEventDto> SendTestEvent(TestEventDto testEventDto);
+    public Task<ActivityEvent> SendActivityCreatedEvent(ActivityEvent activityEvent);
 }
 
 [Receiver]
 public interface ITestHubReceiver
 {
-    public Task TestEventReceived(TestEventDto testEventDto);
+    public Task ActivityCreatedEventReceived(ActivityEvent activityEvent);
 }

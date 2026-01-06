@@ -14,6 +14,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="RabbitMQ.Client" Version="7.2.0" />
         <PackageReference Include="Tapper.Analyzer" Version="1.12.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -23,46 +25,13 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="TypedSignalR.Client.TypeScript.Attributes" Version="1.14.0" />
-
-        <!-- Code generator -->
-        <PackageReference Include="NJsonSchema.CodeGeneration.CSharp"
-                          Version="11.5.2"
-                          PrivateAssets="all" />
     </ItemGroup>
 
     <!-- Ensure generated files are compiled -->
     <ItemGroup>
-        <Compile Include="Generated\**\*.cs" />
+        <Compile Include="Generated\*.cs" />
     </ItemGroup>
-
-    <!-- Code generation -->
-    <Target Name="GenerateEventContracts" BeforeTargets="BeforeCompile">
-        <MakeDir Directories="$(GeneratedDir)" />
-
-        <!-- Restore local dotnet tools (so "dotnet tool run ..." works everywhere) -->
-        <Exec Command="dotnet tool restore" />
-
-        <ItemGroup>
-            <JsonSchemas Include="$(SchemasDir)\*.schema.json" />
-        </ItemGroup>
-
-        <Message Importance="high"
-                 Text="Generating C# event contracts from JSON Schemas..." />
-
-        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-      &quot;
-      foreach ($schema in Get-ChildItem '$(SchemasDir)\*.schema.json') {
-        $name = [System.IO.Path]::GetFileNameWithoutExtension($schema.Name)
-        dotnet njsonschema codegen `
-          /input:$schema.FullName `
-          /output:'$(GeneratedDir)\$name.cs' `
-          /namespace:$(RootNamespace) `
-          /classStyle:Poco `
-          /dateTimeType:DateTimeOffset `
-          /generateOptionalPropertiesAsNullable:true `
-          /requiredPropertiesMustBeDefined:true
-      }
-      &quot;" />
-    </Target>
-
+    <ItemGroup>
+      <Folder Include="Generated\" />
+    </ItemGroup>
 </Project>
