@@ -42,7 +42,7 @@ public class RabbitMqService(
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += eventProcessor.HandleEventAsync;
-        await _channel.BasicConsumeAsync(queueResult.QueueName, false, consumer, cancellationToken);
+        await _channel.BasicConsumeAsync(queueResult.QueueName, true, consumer, cancellationToken);
 
         logger.LogInformation("RabbitMQ consumer started.");
     }

@@ -5,7 +5,7 @@ namespace NotificationService.Hubs.Implementation;
 
 public class PushNotificationHub(
     ILogger<PushNotificationHub> logger
-    ) : Hub<INotificationHubReceiver>, IPushNotificationHub
+    ) : Hub<IPushNotificationHubReceiver>, IPushNotificationHub
 {
     [Authorize]
     public async Task<ICollection<string>> GetPendingNotifications()

@@ -11,7 +11,7 @@ public interface IPushNotificationHub
 }
 
 [Receiver]
-public interface INotificationHubReceiver
+public interface IPushNotificationHubReceiver
 {
     public Task PushNotificationReceived(PushNotificationEventDto notificationEvent);
 }

@@ -8,7 +8,7 @@ namespace NotificationService.Service;
 
 public class PushNotificationService(
     ILogger<PushNotificationService> logger,
-    IHubContext<PushNotificationHub, INotificationHubReceiver> notificationHub
+    IHubContext<PushNotificationHub, IPushNotificationHubReceiver> notificationHub
     )
 {
     public async Task SendPushNotification(PushNotification notification)

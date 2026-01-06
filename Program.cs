@@ -35,6 +35,7 @@ class Program
             .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"))
             .AddNotificationProcessors(pb => pb
                 .AddProcessor<ActivityEvent, ActivityCreatedNotificationProcessor>("shiftcontrol.activity.created")
+                .AddProcessor<ActivityEvent, ActivityUpdatedNotificationProcessor>("shiftcontrol.activity.updated")
                 .Build()
             )
             .AddScoped<PushNotificationService>()
@@ -84,7 +85,7 @@ class Program
     private static void SetupRoutes(WebApplication app)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-        app.MapHub<PushNotificationHub>(HubPrefix + "/testhub");
+        app.MapHub<PushNotificationHub>(HubPrefix + "/push");
 
         app.UseCors(options =>
         {

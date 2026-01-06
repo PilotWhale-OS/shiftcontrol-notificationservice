@@ -3,14 +3,14 @@ using NotificationService.Generated;
 
 namespace NotificationService.Notifications;
 
-public class ActivityCreatedNotificationProcessor(
+public class ActivityUpdatedNotificationProcessor(
     ILogger<ActivityCreatedNotificationProcessor> logger
 ) : INotificationProcessor<ActivityEvent>
 {
     public Task<PushNotification?> BuildPush(ActivityEvent eventData)
     {
         return Task.FromResult<PushNotification?>(
-            new PushNotification(null, "New Activity Created", $"Activity '{eventData.Activity.Name}' has been created.")
+            new PushNotification(null, "Activity Updated", $"Activity '{eventData.Activity.Name}' has been updated.")
         );
     }
 
