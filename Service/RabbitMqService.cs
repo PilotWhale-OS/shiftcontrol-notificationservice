@@ -1,85 +1,76 @@
-﻿using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using Microsoft.AspNetCore.SignalR;
-using NotificationService.Classes.Dto;
+using Newtonsoft.Json;
 using NotificationService.Hubs;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using NotificationService.Hubs.Implementation;
+using NotificationService.Converters;
 using ShiftControl.Events;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace NotificationService.Service;
 
 public class RabbitMqService : IHostedService
 {
     private readonly ILogger<RabbitMqService> _logger;
-    private readonly IHubContext<TestHub, ITestHub> _hubContext;
-    private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private IConnection _connection;
+    private readonly IConfiguration _configuration;
+    private IChannel _channel;
 
-    public RabbitMqService(IConfiguration configuration, ILogger<RabbitMqService> logger, IHubContext<TestHub, ITestHub> hubContext)
+    public RabbitMqService(IConfiguration configuration, ILogger<RabbitMqService> logger)
     {
         _logger = logger;
-        _hubContext = hubContext;
-        var factory = new ConnectionFactory()
-        {
-            HostName = configuration.GetValue<string>("RabbitMQ:HostName"),
-            Port = configuration.GetValue<int>("RabbitMQ:Port"),
-            UserName = configuration.GetValue<string>("RabbitMQ:UserName"),
-            Password = configuration.GetValue<string>("RabbitMQ:Password"),
-            //DispatchConsumersAsync = true
-        };
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
+        _configuration = configuration;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _channel.ExchangeDeclare("shiftcontrol", ExchangeType.Topic, durable: true);
-        var queueName = _channel.QueueDeclare().QueueName;
-        _channel.QueueBind(queue: queueName,
+        var factory = new ConnectionFactory()
+        {
+            HostName = _configuration.GetValue<string>("RabbitMQ:HostName"),
+            Port = _configuration.GetValue<int>("RabbitMQ:Port"),
+            UserName = _configuration.GetValue<string>("RabbitMQ:UserName"),
+            Password = _configuration.GetValue<string>("RabbitMQ:Password"),
+            //DispatchConsumersAsync = true
+        };
+        _connection = await factory.CreateConnectionAsync();
+        _channel = await _connection.CreateChannelAsync();
+
+        //await _channel.ExchangeDeclareAsync("shiftcontrol", ExchangeType.Topic, durable: true);
+        var queueResult = await _channel.QueueDeclareAsync("notificationservice.queue",
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
+
+        await _channel.QueueBindAsync(queue: queueResult.QueueName,
             exchange: "shiftcontrol",
-            routingKey: "#");
+            routingKey: "shiftcontrol.#");
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += async (model, ea) =>
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-            _logger.LogInformation("Received message: {message}", message);
 
-
-
-            if (ea.RoutingKey == "activity.created")
+            if (ea.RoutingKey == "shiftcontrol.activity.created")
             {
-                var activityEvent = ActivityEventSchema.FromJson(message);
-            }
-
-
-
-
-            // Assuming the message is a TestEventDto for now
-            var testEvent = JsonSerializer.Deserialize<TestEventDto>(message);
-            if (testEvent != null)
-            {
-                await _hubContext.Clients.All.TestEvent(testEvent);
+                var activityEvent = JsonConvert.DeserializeObject<ActivityEvent>(message, new JsonSerializerSettings
+                {
+                    Converters = { new UnixTimestampConverter() }
+                });
+                _logger.LogInformation("Deserialized ActivityEvent: {activityEvent}", activityEvent);
             }
         };
-        _channel.BasicConsume(queue: queueName,
-            autoAck: true,
-            consumer: consumer);
+        await _channel.BasicConsumeAsync(queueResult.QueueName, false, consumer);
 
         _logger.LogInformation("RabbitMQ consumer started.");
-
-        return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _channel.Close();
-        _connection.Close();
-        return Task.CompletedTask;
+        await _channel.CloseAsync();
+        await _connection.CloseAsync();
     }
 }
 

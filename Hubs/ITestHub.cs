@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using NotificationService.Classes.Dto;
 using TypedSignalR.Client;
 
 namespace NotificationService.Hubs;
