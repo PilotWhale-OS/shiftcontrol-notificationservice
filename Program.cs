@@ -35,7 +35,7 @@ class Program
             .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"))
             .AddNotificationProcessors(pb => pb
                 .AddProcessor<ActivityEvent, ActivityCreatedNotificationProcessor>("shiftcontrol.activity.created")
-                .AddProcessor<ActivityEvent, ActivityUpdatedNotificationProcessor>("shiftcontrol.activity.updated")
+                .AddProcessor<ActivityEvent, ActivityUpdatedNotificationProcessor>("shiftcontrol.activity.updated") // TODO routing key has id appended?
                 .Build()
             )
             .AddScoped<PushNotificationService>()
