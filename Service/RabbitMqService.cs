@@ -34,6 +34,14 @@ public class RabbitMqService(
             cancellationToken: cancellationToken
         );
 
+        await _channel.ExchangeDeclareAsync(
+            "shiftcontrol",
+            ExchangeType.Topic,
+            durable: true,
+            autoDelete: false,
+            cancellationToken: cancellationToken
+        );
+
         await _channel.QueueBindAsync(queue: queueResult.QueueName,
             exchange: "shiftcontrol",
             routingKey: "shiftcontrol.#",
@@ -42,7 +50,7 @@ public class RabbitMqService(
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += eventProcessor.HandleEventAsync;
-        await _channel.BasicConsumeAsync(queueResult.QueueName, true, consumer, cancellationToken);
+        await _channel.BasicConsumeAsync(queueResult.QueueName, false, consumer, cancellationToken);
 
         logger.LogInformation("RabbitMQ consumer started.");
     }

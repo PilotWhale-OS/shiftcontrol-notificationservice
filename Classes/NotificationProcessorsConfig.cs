@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace NotificationService.Classes;
 
 
@@ -35,8 +37,15 @@ public class NotificationProcessorsConfig(
 {
     public Type? GetEventType(string routingKey)
     {
-        eventTypeMap.TryGetValue(routingKey, out var eventType);
-        return eventType;
+        foreach (var (pattern, eventType) in eventTypeMap)
+        {
+            if (TopicMatch(pattern, routingKey))
+            {
+                return eventType;
+            }
+        }
+
+        return null;
     }
 
     public IReadOnlyList<Type> GetAllNotificationProcessors()
@@ -47,5 +56,18 @@ public class NotificationProcessorsConfig(
     public IReadOnlyList<Type> GetEventNotificationProcessors(Type eventType)
     {
         return eventNotificationProcessorsMap.GetValueOrDefault(eventType, []);
+    }
+
+
+    private static bool TopicMatch(string pattern, string routingKey)
+    {
+        var regexPattern = "^" +
+                           Regex.Escape(pattern)
+                               .Replace(@"\*", "[^.]+")
+                               .Replace(@"\#", "(.+)?")
+                               .Replace(@"\.", @"\.") +
+                           "$";
+
+        return Regex.IsMatch(routingKey, regexPattern);
     }
 }
