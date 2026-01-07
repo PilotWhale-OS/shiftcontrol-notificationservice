@@ -10,7 +10,12 @@ public class ActivityUpdatedNotificationProcessor(
     public Task<PushNotification?> BuildPush(ActivityEvent eventData)
     {
         return Task.FromResult<PushNotification?>(
-            new PushNotification(null, "Activity Updated", $"Activity '{eventData.Activity.Name}' has been updated.")
+            new PushNotification(
+                null,
+                "Activity Updated",
+                $"Activity '{eventData.Activity.Name}' has been updated.",
+                DateTime.UtcNow
+            )
         );
     }
 

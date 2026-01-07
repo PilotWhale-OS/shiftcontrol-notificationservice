@@ -7,7 +7,7 @@ namespace NotificationService.Hubs;
 [Hub]
 public interface IPushNotificationHub
 {
-    public Task<ICollection<string>> GetPendingNotifications();
+    public Task<ICollection<PushNotificationEventDto>> GetPendingNotifications();
 }
 
 [Receiver]

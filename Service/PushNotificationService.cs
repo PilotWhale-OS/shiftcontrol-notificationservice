@@ -15,7 +15,7 @@ public class PushNotificationService(
     {
         logger.LogInformation("Sending push notification to users: {UserIds}",  notification.Recipients is null ? "everyone" : string.Join(", ", notification.Recipients));
 
-        var notificationEvent = new PushNotificationEventDto(notification.Title, notification.Notification, notification.Url);
+        var notificationEvent = new PushNotificationEventDto(notification.Title, notification.Notification, notification.Time, notification.Url);
 
         if (notification.Recipients is { } recipients)
         {
