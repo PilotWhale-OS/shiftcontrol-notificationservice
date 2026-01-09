@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using NotificationService.Settings;
+using NotificationService.ShiftserviceClient;
 
 namespace NotificationService.Service;
 
@@ -10,8 +11,15 @@ public class ShiftserviceApiClientService(
     KeycloakService keycloakService
     )
 {
+    private ShiftserviceClient.Client? _client = null;
+
     public async Task<ShiftserviceClient.Client> GetClient()
     {
+        if (_client is not null)
+        {
+            return _client;
+        }
+
         var keycloakToken = await keycloakService.ObtainToken();
 
         // set auth header for all requests using this instance
@@ -21,7 +29,7 @@ public class ShiftserviceApiClientService(
         var baseUrl = apiOptions.Value.BaseUrl;
         if (string.IsNullOrEmpty(baseUrl))
         {
-            throw new InvalidOperationException("Typo API base URL is not configured.");
+            throw new InvalidOperationException("Shiftservice API base URL is not configured.");
         }
 
         var apiClient = new ShiftserviceClient.Client(httpClient)
@@ -29,6 +37,23 @@ public class ShiftserviceApiClientService(
             BaseUrl = baseUrl,
             ReadResponseAsString = false
         };
+
+        _client = apiClient;
         return apiClient;
+    }
+
+    public async Task<ICollection<AccountInfoDto>> GetRecipientsForNotificationAsync(
+        RecipientsFilterDto filterDto)
+    {
+        var client = await GetClient();
+        var response = await client.GetRecipientsForNotificationAsync(filterDto);
+        return response.Recipients;
+    }
+
+    public async Task<AccountInfoDto> GetRecipientInfoAsync(string accountId)
+    {
+        var client = await GetClient();
+        var response = await client.GetRecipientInformationAsync(accountId);
+        return response;
     }
 }

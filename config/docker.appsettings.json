@@ -29,12 +29,12 @@
     "EnsureCreated": true
   },
   "Keycloak": {
-    "BaseUrl": "http://keycloak.127.0.0.1.nip.io",
+    "BaseUrl": "http://keycloak:8080/",
     "ClientId": "internal",
     "ClientSecret": "3mnwKdFacOw8DiTfcCHHSVVMiHjzIoms",
     "Realm": "dev"
   },
   "Shiftservice": {
-    "BaseUrl": "http://shiftservice.127.0.0.1.nip.io/"
+    "BaseUrl": "http://shiftservice:8080/"
   }
 }

@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NotificationService.Classes;
 using NotificationService.Database;
-using NotificationService.Generated;
 using NotificationService.Hubs.Implementation;
 using NotificationService.Notifications;
 using NotificationService.Service;
 using NotificationService.Settings;
+using ShiftControl.Events;
 
 namespace NotificationService;
 
@@ -41,8 +41,8 @@ class Program
             .Configure<ShiftserviceSettings>(builder.Configuration.GetSection("Shiftservice"))
             .AddDbContext<NotificationServiceDbContext>()
             .AddNotificationProcessors(pb => pb
-                .AddProcessor<ActivityEvent, ActivityCreatedNotificationProcessor>("shiftcontrol.activity.created")
-                .AddProcessor<ActivityEvent, ActivityUpdatedNotificationProcessor>("shiftcontrol.activity.updated.*")
+                .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
+                .AddProcessor<ShiftPlanVolunteerEvent, PlannerJoinedNotificationProcessor>("shiftcontrol.shiftplan.joined.planner.#")
                 .Build()
             )
             .AddSingleton<KeycloakService>()

@@ -1,8 +1,10 @@
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NotificationService.Classes;
 using NotificationService.Converters;
 using RabbitMQ.Client.Events;
+using ShiftControl.Events;
 
 namespace NotificationService.Service;
 
@@ -31,10 +33,25 @@ public class EventProcessorService(
             return;
         }
 
-        var eventData = JsonConvert.DeserializeObject(message, eventType, new JsonSerializerSettings
+        object? eventData = null;
+        try
         {
-            Converters = { new UnixTimestampConverter() }
-        });
+            /* should have a static FromJson method if quicktype class -> get using reflection */
+            var fromJsonMethod = eventType.GetMethod("FromJson", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            if (fromJsonMethod is not null)
+            {
+                ShiftControl.Events.Converter.Settings.Converters = new List<JsonConverter>(new[] { new UnixTimestampConverter() }
+                    .Concat(
+                        ShiftControl.Events.Converter.Settings.Converters
+                            .Where(c => c.GetType() != typeof(IsoDateTimeConverter))
+                    ));
+                eventData = fromJsonMethod.Invoke(null, new object[] { message });
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Error deserializing event");
+        }
 
         if (eventData is null)
         {
