@@ -1,17 +1,27 @@
 using NotificationService.Classes;
 using NotificationService.Generated;
+using NotificationService.Service;
 
 namespace NotificationService.Notifications;
 
 public class ActivityCreatedNotificationProcessor(
-    ILogger<ActivityCreatedNotificationProcessor> logger
+    ILogger<ActivityCreatedNotificationProcessor> logger,
+    ShiftserviceApiClientService clientService
 ) : INotificationProcessor<ActivityEvent>
 {
-    public Task<PushNotification?> BuildPush(ActivityEvent eventData)
+    public async Task<PushNotification?> BuildPush(ActivityEvent activityEvent)
     {
-        return Task.FromResult<PushNotification?>(
-            new PushNotification(null, "New Activity Created", $"Activity '{eventData.Activity.Name}' has been created.", DateTime.UtcNow, null, false, null)
-        );
+        var client = await clientService.GetClient();
+
+        return new PushNotification(
+            null,
+            "New Activity Created",
+            $"Activity '{activityEvent.Activity.Name}' has been created.",
+            DateTime.UtcNow,
+            null,
+            false,
+            null
+            );
     }
 
     public Task<EmailNotification?> BuildEmail(ActivityEvent eventData)
