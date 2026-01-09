@@ -14,7 +14,10 @@ public class ActivityUpdatedNotificationProcessor(
                 null,
                 "Activity Updated",
                 $"Activity '{eventData.Activity.Name}' has been updated.",
-                DateTime.UtcNow
+                DateTime.UtcNow,
+                null,
+                false,
+                null
             )
         );
     }

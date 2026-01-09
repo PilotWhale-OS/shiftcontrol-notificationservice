@@ -10,7 +10,7 @@ public class ActivityCreatedNotificationProcessor(
     public Task<PushNotification?> BuildPush(ActivityEvent eventData)
     {
         return Task.FromResult<PushNotification?>(
-            new PushNotification(null, "New Activity Created", $"Activity '{eventData.Activity.Name}' has been created.", DateTime.UtcNow)
+            new PushNotification(null, "New Activity Created", $"Activity '{eventData.Activity.Name}' has been created.", DateTime.UtcNow, null, false, null)
         );
     }
 
