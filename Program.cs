@@ -1,6 +1,7 @@
 ﻿﻿using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NotificationService.Classes;
+using NotificationService.Database;
 using NotificationService.Generated;
 using NotificationService.Hubs.Implementation;
 using NotificationService.Notifications;
@@ -33,6 +34,8 @@ class Program
             .AddCors()
             .AddSignalR().Services
             .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"))
+            .Configure<DbSettings>(builder.Configuration.GetSection("Db"))
+            .AddDbContext<NotificationServiceDbContext>()
             .AddNotificationProcessors(pb => pb
                 .AddProcessor<ActivityEvent, ActivityCreatedNotificationProcessor>("shiftcontrol.activity.created")
                 .AddProcessor<ActivityEvent, ActivityUpdatedNotificationProcessor>("shiftcontrol.activity.updated.*")
@@ -79,7 +82,18 @@ class Program
             };
         });
 
-        return builder.Build();
+        var app = builder.Build();
+
+        /* ensure db created */
+        var dbSettings = builder.Configuration.GetSection("Db").Get<DbSettings>();
+        if (dbSettings?.EnsureCreated == true)
+        {
+            var db = app.Services
+                .GetRequiredService<NotificationServiceDbContext>();
+            db.Database.EnsureCreated();
+        }
+
+        return app;
     }
 
     private static void SetupRoutes(WebApplication app)

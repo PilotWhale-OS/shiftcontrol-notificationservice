@@ -9,7 +9,6 @@ namespace NotificationService.Service;
 public class EventProcessorService(
     ILogger<EventProcessorService> logger,
     NotificationProcessorsConfig notificationProcessorsConfig,
-    PushNotificationService pushNotificationService,
     IServiceProvider provider)
 {
     /// <summary>
@@ -47,7 +46,6 @@ public class EventProcessorService(
 
         var processors = notificationProcessorsConfig.GetEventNotificationProcessors(eventType);
 
-        var scope = provider.CreateScope();
 
         // i f'd up with the generics here so using reflection to call the methods
         logger.LogInformation("Processing event {eventType} using {processorCount} processors", eventType, processors.Count);
@@ -57,6 +55,8 @@ public class EventProcessorService(
 
             try
             {
+                var scope = provider.CreateScope();
+                var pushNotificationService = scope.ServiceProvider.GetRequiredService<PushNotificationService>(); /*  avoid db concurrency on same instance*/
                 var processor = scope.ServiceProvider.GetRequiredService(processorType);
 
                 var buildPushMethod = processorType.GetMethod("BuildPush");
@@ -82,7 +82,8 @@ public class EventProcessorService(
                 logger.LogDebug("Push Message: {notificationMessage}", pushMessage);
                 logger.LogDebug("Email Message: {notificationMessage}", emailMessage);
 
-                if(pushMessage is not null) await pushNotificationService.SendPushNotification(pushMessage);
+                if(pushMessage is not null) await pushNotificationService.PublishPushNotification(pushMessage);
+                scope.Dispose();
             }
             catch (Exception ex)
             {

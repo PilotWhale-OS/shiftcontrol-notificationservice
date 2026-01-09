@@ -23,5 +23,9 @@
     "Port": 5672,
     "UserName": "shiftcontrol",
     "Password": "password"
+  },
+  "Db": {
+    "ConnectionString": "Server=postgres;Port=5432;Database=notificationservice;User Id=shiftcontrol;Password=password;",
+    "EnsureCreated": true
   }
 }

@@ -7,11 +7,14 @@ namespace NotificationService.Hubs;
 [Hub]
 public interface IPushNotificationHub
 {
-    public Task<ICollection<PushNotificationEventDto>> GetPendingNotifications();
+    public Task<ICollection<PushNotificationDto>> GetHistory();
+    public Task MarkAllAsRead();
+    public Task ClearNotification(Guid notificationId);
+    public Task ClearHistory();
 }
 
 [Receiver]
 public interface IPushNotificationHubReceiver
 {
-    public Task PushNotificationReceived(PushNotificationEventDto notificationEvent);
+    public Task PushNotificationReceived(PushNotificationDto notification);
 }
