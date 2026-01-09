@@ -20,8 +20,6 @@ public class PushNotificationService(
 
         var notificationEvent = new PushNotificationDto(notification.Title, notification.Notification, notification.Time, notification.Url, notification.IsRead, notification.Id);
 
-        notification = notification with { Recipients = ["28c02050-4f90-4f3a-b1df-3c7d27a166e8"] }; // TODO remove test code
-
         if (notification.Recipients is { } recipients)
         {
             /* persist only if known list of recipients */

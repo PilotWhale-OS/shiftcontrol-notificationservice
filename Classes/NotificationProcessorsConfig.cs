@@ -5,43 +5,39 @@ namespace NotificationService.Classes;
 
 public class NotificationProcessorsConfigBuilder
 {
-    private readonly Dictionary<string, Type> _eventTypeMap = new();
-    private readonly Dictionary<Type, List<Type>> _eventNotificationProcessorsMap = new();
+    private readonly Dictionary<string, List<NotificationProcessorsConfig.EventProcessorMapping>> _eventNotificationProcessorsMap = new();
 
     public NotificationProcessorsConfigBuilder AddProcessor<TEvent, TProcessor>(string routingKey)
         where TEvent : class
         where TProcessor : class, INotificationProcessor<TEvent>
     {
-        _eventTypeMap[routingKey] = typeof(TEvent);
-
-        if (!_eventNotificationProcessorsMap.TryGetValue(typeof(TEvent), out var processors))
+        if (!_eventNotificationProcessorsMap.ContainsKey(routingKey))
         {
-            processors = new List<Type>();
-            _eventNotificationProcessorsMap[typeof(TEvent)] = processors;
+            _eventNotificationProcessorsMap[routingKey] = new List<NotificationProcessorsConfig.EventProcessorMapping>();
         }
-
-        processors.Add(typeof(TProcessor));
+        _eventNotificationProcessorsMap[routingKey].Add(new NotificationProcessorsConfig.EventProcessorMapping(routingKey, typeof(TEvent), typeof(TProcessor)));
         return this;
     }
 
     public NotificationProcessorsConfig Build()
     {
-        return new NotificationProcessorsConfig(_eventTypeMap, _eventNotificationProcessorsMap);
+        return new NotificationProcessorsConfig(_eventNotificationProcessorsMap);
     }
 }
 
 public class NotificationProcessorsConfig(
-    IReadOnlyDictionary<string, Type> eventTypeMap,
-    IReadOnlyDictionary<Type, List<Type>> eventNotificationProcessorsMap
+    IReadOnlyDictionary<string, List<NotificationProcessorsConfig.EventProcessorMapping>> eventNotificationProcessorsMap
 )
 {
-    public Type? GetEventType(string routingKey)
+    public record struct EventProcessorMapping(string RoutingKeyPattern, Type EventType, Type ProcessorType);
+
+    public ICollection<EventProcessorMapping>? GetEventProcessors(string routingKey)
     {
-        foreach (var (pattern, eventType) in eventTypeMap)
+        foreach (var (pattern, processors) in eventNotificationProcessorsMap)
         {
             if (TopicMatch(pattern, routingKey))
             {
-                return eventType;
+                return processors;
             }
         }
 
@@ -50,12 +46,12 @@ public class NotificationProcessorsConfig(
 
     public IReadOnlyList<Type> GetAllNotificationProcessors()
     {
-        return eventNotificationProcessorsMap.Values.SelectMany(v => v).ToList();
-    }
-
-    public IReadOnlyList<Type> GetEventNotificationProcessors(Type eventType)
-    {
-        return eventNotificationProcessorsMap.GetValueOrDefault(eventType, []);
+        return eventNotificationProcessorsMap
+            .Values
+            .SelectMany(mappings => mappings)
+            .Select(mapping => mapping.ProcessorType)
+            .Distinct()
+            .ToList();
     }
 
 
