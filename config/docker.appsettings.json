@@ -1,7 +1,8 @@
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Debug"
+      "Default": "Warning",
+      "NotificationService.Service.EventProcessorService": "Information"
     }
   },
   "SignalR": {

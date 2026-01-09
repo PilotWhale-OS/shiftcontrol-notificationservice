@@ -40,12 +40,12 @@ public class EventProcessorService(
             var fromJsonMethod = eventType.GetMethod("FromJson", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             if (fromJsonMethod is not null)
             {
-                ShiftControl.Events.Converter.Settings.Converters = new List<JsonConverter>(new[] { new UnixTimestampConverter() }
+                Converter.Settings.Converters = new List<JsonConverter>(new[] { new UnixTimestampConverter() }
                     .Concat(
-                        ShiftControl.Events.Converter.Settings.Converters
+                        Converter.Settings.Converters
                             .Where(c => c.GetType() != typeof(IsoDateTimeConverter))
                     ));
-                eventData = fromJsonMethod.Invoke(null, new object[] { message });
+                eventData = fromJsonMethod.Invoke(null, [message]);
             }
         }
         catch (Exception ex)
@@ -59,16 +59,16 @@ public class EventProcessorService(
             return;
         }
 
-        logger.LogDebug("Deserialized event {routingKey}:{eventType}: {eventData}", eventArgs.RoutingKey, eventType, eventData);
+        logger.LogInformation("Deserialized event {routingKey}:{eventType}: {eventData}", eventArgs.RoutingKey, eventType, eventData);
 
         var processors = notificationProcessorsConfig.GetEventNotificationProcessors(eventType);
 
 
         // i f'd up with the generics here so using reflection to call the methods
-        logger.LogInformation("Processing event {eventType} using {processorCount} processors", eventType, processors.Count);
+        logger.LogDebug("Processing event {eventType} using {processorCount} processors", eventType, processors.Count);
         var tasks = processors.Select(processorType => Task.Run(async () =>
         {
-            logger.LogDebug("Processing message for processor {processorType}", processorType);
+            logger.LogInformation("Processing message using processor {processorType}", processorType);
 
             try
             {
@@ -83,7 +83,7 @@ public class EventProcessorService(
                     return;
                 }
 
-                var pushMessageTask = (Task<PushNotification?>)buildPushMethod.Invoke(processor, new[] { eventData })!;
+                var pushMessageTask = (Task<PushNotification?>)buildPushMethod.Invoke(processor, [eventData])!;
                 var pushMessage = await pushMessageTask;
 
                 var buildEmailMethod = processorType.GetMethod("BuildEmail");
@@ -93,11 +93,11 @@ public class EventProcessorService(
                     return;
                 }
 
-                var emailMessageTask = (Task<EmailNotification?>)buildEmailMethod.Invoke(processor, new[] { eventData })!;
+                var emailMessageTask = (Task<EmailNotification?>)buildEmailMethod.Invoke(processor, [eventData])!;
                 var emailMessage = await emailMessageTask;
 
-                logger.LogDebug("Push Message: {notificationMessage}", pushMessage);
-                logger.LogDebug("Email Message: {notificationMessage}", emailMessage);
+                logger.LogInformation("Push Message: {notificationMessage}", pushMessage);
+                logger.LogInformation("Email Message: {notificationMessage}", emailMessage);
 
                 if(pushMessage is not null) await pushNotificationService.PublishPushNotification(pushMessage);
                 scope.Dispose();

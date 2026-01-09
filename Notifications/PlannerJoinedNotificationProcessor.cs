@@ -15,7 +15,7 @@ public class PlannerJoinedNotificationProcessor(
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
-            NotificationType = RecipientsFilterDtoNotificationType.ADMIN_PLANNER_JOINED,
+            NotificationType = RecipientsFilterDtoNotificationType.ADMIN_PLANNER_JOINED_PLAN,
             RelatedShiftPlanId = eventData.ShiftPlan.Id,
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.ADMIN
         });

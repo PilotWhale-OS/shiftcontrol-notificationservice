@@ -9826,8 +9826,8 @@ namespace NotificationService.ShiftserviceClient
         [System.Runtime.Serialization.EnumMember(Value = @"PLANNER_TRUST_ALERT_TRIGGERED")]
         PLANNER_TRUST_ALERT_TRIGGERED = 6,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_PLANNER_JOINED")]
-        ADMIN_PLANNER_JOINED = 7,
+        [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_PLANNER_JOINED_PLAN")]
+        ADMIN_PLANNER_JOINED_PLAN = 7,
 
         [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_REWARD_SYNC_USED")]
         ADMIN_REWARD_SYNC_USED = 8,
@@ -9925,8 +9925,8 @@ namespace NotificationService.ShiftserviceClient
         [System.Runtime.Serialization.EnumMember(Value = @"PLANNER_TRUST_ALERT_TRIGGERED")]
         PLANNER_TRUST_ALERT_TRIGGERED = 6,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_PLANNER_JOINED")]
-        ADMIN_PLANNER_JOINED = 7,
+        [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_PLANNER_JOINED_PLAN")]
+        ADMIN_PLANNER_JOINED_PLAN = 7,
 
         [System.Runtime.Serialization.EnumMember(Value = @"ADMIN_REWARD_SYNC_USED")]
         ADMIN_REWARD_SYNC_USED = 8,

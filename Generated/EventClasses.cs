@@ -1140,7 +1140,7 @@ namespace ShiftControl.Events
 
     public enum ChannelElement { Email, Push };
 
-    public enum NotificationSettingsType { AdminPlannerJoined, AdminRewardSyncUsed, PlannerTrustAlertTriggered, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedAction, VolunteerAutoAssigned, VolunteerShiftReminder, VolunteerTradeRequested, VolunteerTradesAuctionsRequestsChanged };
+    public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, PlannerTrustAlertTriggered, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedAction, VolunteerAutoAssigned, VolunteerShiftReminder, VolunteerTradeRequested, VolunteerTradesAuctionsRequestsChanged };
 
     public enum RewardPointTransactionPartType { Earn, ManualAdjust, Reversal };
 
@@ -1578,8 +1578,8 @@ namespace ShiftControl.Events
             var value = serializer.Deserialize<string>(reader);
             switch (value)
             {
-                case "ADMIN_PLANNER_JOINED":
-                    return NotificationSettingsType.AdminPlannerJoined;
+                case "ADMIN_PLANNER_JOINED_PLAN":
+                    return NotificationSettingsType.AdminPlannerJoinedPlan;
                 case "ADMIN_REWARD_SYNC_USED":
                     return NotificationSettingsType.AdminRewardSyncUsed;
                 case "PLANNER_TRUST_ALERT_TRIGGERED":
@@ -1610,8 +1610,8 @@ namespace ShiftControl.Events
             var value = (NotificationSettingsType)untypedValue;
             switch (value)
             {
-                case NotificationSettingsType.AdminPlannerJoined:
-                    serializer.Serialize(writer, "ADMIN_PLANNER_JOINED");
+                case NotificationSettingsType.AdminPlannerJoinedPlan:
+                    serializer.Serialize(writer, "ADMIN_PLANNER_JOINED_PLAN");
                     return;
                 case NotificationSettingsType.AdminRewardSyncUsed:
                     serializer.Serialize(writer, "ADMIN_REWARD_SYNC_USED");
