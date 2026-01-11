@@ -25,9 +25,9 @@ public class PlannerJoinedNotificationProcessor(
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new PushNotification(
-            recipients.Select(r => r.Id).ToList(),
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
             "Planner Joined",
-            $"{joinedVolunteer.FistName} {joinedVolunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
+            $"{joinedVolunteer.Volunteer.FistName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
             $@"/plans/{eventData.ShiftPlan.Id}",
             false,

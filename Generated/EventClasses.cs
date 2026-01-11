@@ -22,9 +22,10 @@
 //    var positionSlotPartBuilder = PositionSlotPartBuilder.FromJson(jsonString);
 //    var positionSlotVolunteerEvent = PositionSlotVolunteerEvent.FromJson(jsonString);
 //    var preferenceEvent = PreferenceEvent.FromJson(jsonString);
+//    var rewardPointsShareTokenEvent = RewardPointsShareTokenEvent.FromJson(jsonString);
+//    var rewardPointsTransactionPart = RewardPointsTransactionPart.FromJson(jsonString);
+//    var rewardPointsTransactionPartBuilder = RewardPointsTransactionPartBuilder.FromJson(jsonString);
 //    var rewardPointTransactionEvent = RewardPointTransactionEvent.FromJson(jsonString);
-//    var rewardPointTransactionPart = RewardPointTransactionPart.FromJson(jsonString);
-//    var rewardPointTransactionPartBuilder = RewardPointTransactionPartBuilder.FromJson(jsonString);
 //    var roleEvent = RoleEvent.FromJson(jsonString);
 //    var rolePart = RolePart.FromJson(jsonString);
 //    var roleVolunteerEvent = RoleVolunteerEvent.FromJson(jsonString);
@@ -38,6 +39,9 @@
 //    var timeConstraintPart = TimeConstraintPart.FromJson(jsonString);
 //    var tradeEvent = TradeEvent.FromJson(jsonString);
 //    var tradePart = TradePart.FromJson(jsonString);
+//    var trustAlertEvent = TrustAlertEvent.FromJson(jsonString);
+//    var trustAlertPart = TrustAlertPart.FromJson(jsonString);
+//    var trustAlertPartBuilder = TrustAlertPartBuilder.FromJson(jsonString);
 
 namespace ShiftControl.Events
 {
@@ -90,14 +94,12 @@ namespace ShiftControl.Events
     public partial class ActivityLocation
     {
         [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PurpleMinMaxLengthCheckConverter))]
         public string Description { get; set; }
 
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(FluffyMinMaxLengthCheckConverter))]
         public string Name { get; set; }
 
         [JsonProperty("readOnly", NullValueHandling = NullValueHandling.Ignore)]
@@ -134,14 +136,12 @@ namespace ShiftControl.Events
     public partial class ActivityPartLocation
     {
         [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PurpleMinMaxLengthCheckConverter))]
         public string Description { get; set; }
 
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(FluffyMinMaxLengthCheckConverter))]
         public string Name { get; set; }
 
         [JsonProperty("readOnly", NullValueHandling = NullValueHandling.Ignore)]
@@ -158,6 +158,9 @@ namespace ShiftControl.Events
 
         [JsonProperty("assignment", NullValueHandling = NullValueHandling.Ignore)]
         public Assignmentent Assignment { get; set; }
+
+        [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string RoutingKey { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -463,6 +466,9 @@ namespace ShiftControl.Events
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
         public PositionSlotEventPositionSlot PositionSlot { get; set; }
 
+        [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string RoutingKey { get; set; }
+
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
 
@@ -505,6 +511,9 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
         public PositionSlotVolunteerEventPositionSlot PositionSlot { get; set; }
+
+        [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string RoutingKey { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -561,13 +570,13 @@ namespace ShiftControl.Events
         public string PositionSlotName { get; set; }
     }
 
-    public partial class RewardPointTransactionEvent
+    public partial class RewardPointsShareTokenEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
-        [JsonProperty("rewardPointTransactionPart", NullValueHandling = NullValueHandling.Ignore)]
-        public RewardPointTransaction RewardPointTransactionPart { get; set; }
+        [JsonProperty("rewardPointsShareTokenPart", NullValueHandling = NullValueHandling.Ignore)]
+        public RewardPointsShareToken RewardPointsShareTokenPart { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -576,7 +585,19 @@ namespace ShiftControl.Events
         public string TraceId { get; set; }
     }
 
-    public partial class RewardPointTransaction
+    public partial class RewardPointsShareToken
+    {
+        [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? CreatedAt { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
+        public string Token { get; set; }
+    }
+
+    public partial class RewardPointsTransactionPart
     {
         [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -585,7 +606,7 @@ namespace ShiftControl.Events
         public string EventId { get; set; }
 
         [JsonProperty("metadata", NullValueHandling = NullValueHandling.Ignore)]
-        public RewardPointTransactionPartMetadata Metadata { get; set; }
+        public RewardPointsTransactionPartMetadata Metadata { get; set; }
 
         [JsonProperty("points", NullValueHandling = NullValueHandling.Ignore)]
         public long? Points { get; set; }
@@ -594,17 +615,36 @@ namespace ShiftControl.Events
         public long? PositionSlotId { get; set; }
 
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        public RewardPointTransactionPartType? Type { get; set; }
+        public RewardPointsTransactionPartType? Type { get; set; }
 
         [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
         public string VolunteerId { get; set; }
     }
 
-    public partial class RewardPointTransactionPartMetadata
+    public partial class RewardPointsTransactionPartMetadata
     {
     }
 
-    public partial class RewardPointTransactionPart
+    public partial class RewardPointsTransactionPartBuilder
+    {
+    }
+
+    public partial class RewardPointTransactionEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("rewardPointsTransactionPart", NullValueHandling = NullValueHandling.Ignore)]
+        public RewardPoint RewardPointsTransactionPart { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+    }
+
+    public partial class RewardPoint
     {
         [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -613,7 +653,7 @@ namespace ShiftControl.Events
         public string EventId { get; set; }
 
         [JsonProperty("metadata", NullValueHandling = NullValueHandling.Ignore)]
-        public RewardPointTransactionPartMetadataClass Metadata { get; set; }
+        public RewardPointsTransactionPartMetadataClass Metadata { get; set; }
 
         [JsonProperty("points", NullValueHandling = NullValueHandling.Ignore)]
         public long? Points { get; set; }
@@ -622,17 +662,13 @@ namespace ShiftControl.Events
         public long? PositionSlotId { get; set; }
 
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        public RewardPointTransactionPartType? Type { get; set; }
+        public RewardPointsTransactionPartType? Type { get; set; }
 
         [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
         public string VolunteerId { get; set; }
     }
 
-    public partial class RewardPointTransactionPartMetadataClass
-    {
-    }
-
-    public partial class RewardPointTransactionPartBuilder
+    public partial class RewardPointsTransactionPartMetadataClass
     {
     }
 
@@ -1046,6 +1082,9 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string RoutingKey { get; set; }
+
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
 
@@ -1134,6 +1173,55 @@ namespace ShiftControl.Events
         public string PositionSlotName { get; set; }
     }
 
+    public partial class TrustAlertEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        [JsonProperty("trustAlertPart", NullValueHandling = NullValueHandling.Ignore)]
+        public TrustAlert TrustAlertPart { get; set; }
+    }
+
+    public partial class TrustAlert
+    {
+        [JsonProperty("alertType", NullValueHandling = NullValueHandling.Ignore)]
+        public AlertType? AlertType { get; set; }
+
+        [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? CreatedAt { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
+        public string VolunteerId { get; set; }
+    }
+
+    public partial class TrustAlertPart
+    {
+        [JsonProperty("alertType", NullValueHandling = NullValueHandling.Ignore)]
+        public AlertType? AlertType { get; set; }
+
+        [JsonProperty("createdAt", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? CreatedAt { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
+        public string VolunteerId { get; set; }
+    }
+
+    public partial class TrustAlertPartBuilder
+    {
+    }
+
     public enum AssignmentStatus { Accepted, Auction, AuctionRequestForUnassign, RequestForAssignment };
 
     public enum InvitePartType { PlannerJoin, VolunteerJoin };
@@ -1142,13 +1230,15 @@ namespace ShiftControl.Events
 
     public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, PlannerTrustAlertTriggered, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedAction, VolunteerAutoAssigned, VolunteerShiftReminder, VolunteerTradeRequested, VolunteerTradesAuctionsRequestsChanged };
 
-    public enum RewardPointTransactionPartType { Earn, ManualAdjust, Reversal };
+    public enum RewardPointsTransactionPartType { Earn, ManualAdjust, Reversal };
 
     public enum LockStatus { Locked, SelfSignup, Supervised };
 
     public enum TimeConstraintType { Emergency, Unavailable };
 
     public enum TradeStatus { Accepted, Canceled, Open, Rejected };
+
+    public enum AlertType { Auction, Overload, Spam, Trade };
 
     public partial class ActivityEvent
     {
@@ -1240,19 +1330,24 @@ namespace ShiftControl.Events
         public static PreferenceEvent FromJson(string json) => JsonConvert.DeserializeObject<PreferenceEvent>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class RewardPointsShareTokenEvent
+    {
+        public static RewardPointsShareTokenEvent FromJson(string json) => JsonConvert.DeserializeObject<RewardPointsShareTokenEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class RewardPointsTransactionPart
+    {
+        public static RewardPointsTransactionPart FromJson(string json) => JsonConvert.DeserializeObject<RewardPointsTransactionPart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class RewardPointsTransactionPartBuilder
+    {
+        public static RewardPointsTransactionPartBuilder FromJson(string json) => JsonConvert.DeserializeObject<RewardPointsTransactionPartBuilder>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public partial class RewardPointTransactionEvent
     {
         public static RewardPointTransactionEvent FromJson(string json) => JsonConvert.DeserializeObject<RewardPointTransactionEvent>(json, ShiftControl.Events.Converter.Settings);
-    }
-
-    public partial class RewardPointTransactionPart
-    {
-        public static RewardPointTransactionPart FromJson(string json) => JsonConvert.DeserializeObject<RewardPointTransactionPart>(json, ShiftControl.Events.Converter.Settings);
-    }
-
-    public partial class RewardPointTransactionPartBuilder
-    {
-        public static RewardPointTransactionPartBuilder FromJson(string json) => JsonConvert.DeserializeObject<RewardPointTransactionPartBuilder>(json, ShiftControl.Events.Converter.Settings);
     }
 
     public partial class RoleEvent
@@ -1320,6 +1415,21 @@ namespace ShiftControl.Events
         public static TradePart FromJson(string json) => JsonConvert.DeserializeObject<TradePart>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class TrustAlertEvent
+    {
+        public static TrustAlertEvent FromJson(string json) => JsonConvert.DeserializeObject<TrustAlertEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class TrustAlertPart
+    {
+        public static TrustAlertPart FromJson(string json) => JsonConvert.DeserializeObject<TrustAlertPart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class TrustAlertPartBuilder
+    {
+        public static TrustAlertPartBuilder FromJson(string json) => JsonConvert.DeserializeObject<TrustAlertPartBuilder>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public static class Serialize
     {
         public static string ToJson(this ActivityEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1340,9 +1450,10 @@ namespace ShiftControl.Events
         public static string ToJson(this PositionSlotPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this PositionSlotVolunteerEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this PreferenceEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this RewardPointsShareTokenEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this RewardPointsTransactionPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this RewardPointsTransactionPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RewardPointTransactionEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
-        public static string ToJson(this RewardPointTransactionPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
-        public static string ToJson(this RewardPointTransactionPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RoleEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RolePart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RoleVolunteerEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1356,6 +1467,9 @@ namespace ShiftControl.Events
         public static string ToJson(this TimeConstraintPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TradeEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TradePart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this TrustAlertEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this TrustAlertPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this TrustAlertPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
     }
 
     internal static class Converter
@@ -1370,69 +1484,14 @@ namespace ShiftControl.Events
                 InvitePartTypeConverter.Singleton,
                 ChannelElementConverter.Singleton,
                 NotificationSettingsTypeConverter.Singleton,
-                RewardPointTransactionPartTypeConverter.Singleton,
+                RewardPointsTransactionPartTypeConverter.Singleton,
                 LockStatusConverter.Singleton,
                 TimeConstraintTypeConverter.Singleton,
                 TradeStatusConverter.Singleton,
+                AlertTypeConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
-    }
-
-    internal class PurpleMinMaxLengthCheckConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(string);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            var value = serializer.Deserialize<string>(reader);
-            if (value.Length <= 255)
-            {
-                return value;
-            }
-            throw new Exception("Cannot unmarshal type string");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            var value = (string)untypedValue;
-            if (value.Length <= 255)
-            {
-                serializer.Serialize(writer, value);
-                return;
-            }
-            throw new Exception("Cannot marshal type string");
-        }
-
-        public static readonly PurpleMinMaxLengthCheckConverter Singleton = new PurpleMinMaxLengthCheckConverter();
-    }
-
-    internal class FluffyMinMaxLengthCheckConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(string);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            var value = serializer.Deserialize<string>(reader);
-            if (value.Length <= 50)
-            {
-                return value;
-            }
-            throw new Exception("Cannot unmarshal type string");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            var value = (string)untypedValue;
-            if (value.Length <= 50)
-            {
-                serializer.Serialize(writer, value);
-                return;
-            }
-            throw new Exception("Cannot marshal type string");
-        }
-
-        public static readonly FluffyMinMaxLengthCheckConverter Singleton = new FluffyMinMaxLengthCheckConverter();
     }
 
     internal class AssignmentStatusConverter : JsonConverter
@@ -1644,9 +1703,9 @@ namespace ShiftControl.Events
         public static readonly NotificationSettingsTypeConverter Singleton = new NotificationSettingsTypeConverter();
     }
 
-    internal class RewardPointTransactionPartTypeConverter : JsonConverter
+    internal class RewardPointsTransactionPartTypeConverter : JsonConverter
     {
-        public override bool CanConvert(Type t) => t == typeof(RewardPointTransactionPartType) || t == typeof(RewardPointTransactionPartType?);
+        public override bool CanConvert(Type t) => t == typeof(RewardPointsTransactionPartType) || t == typeof(RewardPointsTransactionPartType?);
 
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
@@ -1655,13 +1714,13 @@ namespace ShiftControl.Events
             switch (value)
             {
                 case "EARN":
-                    return RewardPointTransactionPartType.Earn;
+                    return RewardPointsTransactionPartType.Earn;
                 case "MANUAL_ADJUST":
-                    return RewardPointTransactionPartType.ManualAdjust;
+                    return RewardPointsTransactionPartType.ManualAdjust;
                 case "REVERSAL":
-                    return RewardPointTransactionPartType.Reversal;
+                    return RewardPointsTransactionPartType.Reversal;
             }
-            throw new Exception("Cannot unmarshal type RewardPointTransactionPartType");
+            throw new Exception("Cannot unmarshal type RewardPointsTransactionPartType");
         }
 
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
@@ -1671,23 +1730,23 @@ namespace ShiftControl.Events
                 serializer.Serialize(writer, null);
                 return;
             }
-            var value = (RewardPointTransactionPartType)untypedValue;
+            var value = (RewardPointsTransactionPartType)untypedValue;
             switch (value)
             {
-                case RewardPointTransactionPartType.Earn:
+                case RewardPointsTransactionPartType.Earn:
                     serializer.Serialize(writer, "EARN");
                     return;
-                case RewardPointTransactionPartType.ManualAdjust:
+                case RewardPointsTransactionPartType.ManualAdjust:
                     serializer.Serialize(writer, "MANUAL_ADJUST");
                     return;
-                case RewardPointTransactionPartType.Reversal:
+                case RewardPointsTransactionPartType.Reversal:
                     serializer.Serialize(writer, "REVERSAL");
                     return;
             }
-            throw new Exception("Cannot marshal type RewardPointTransactionPartType");
+            throw new Exception("Cannot marshal type RewardPointsTransactionPartType");
         }
 
-        public static readonly RewardPointTransactionPartTypeConverter Singleton = new RewardPointTransactionPartTypeConverter();
+        public static readonly RewardPointsTransactionPartTypeConverter Singleton = new RewardPointsTransactionPartTypeConverter();
     }
 
     internal class LockStatusConverter : JsonConverter
@@ -1826,5 +1885,56 @@ namespace ShiftControl.Events
         }
 
         public static readonly TradeStatusConverter Singleton = new TradeStatusConverter();
+    }
+
+    internal class AlertTypeConverter : JsonConverter
+    {
+        public override bool CanConvert(Type t) => t == typeof(AlertType) || t == typeof(AlertType?);
+
+        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var value = serializer.Deserialize<string>(reader);
+            switch (value)
+            {
+                case "AUCTION":
+                    return AlertType.Auction;
+                case "OVERLOAD":
+                    return AlertType.Overload;
+                case "SPAM":
+                    return AlertType.Spam;
+                case "TRADE":
+                    return AlertType.Trade;
+            }
+            throw new Exception("Cannot unmarshal type AlertType");
+        }
+
+        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
+        {
+            if (untypedValue == null)
+            {
+                serializer.Serialize(writer, null);
+                return;
+            }
+            var value = (AlertType)untypedValue;
+            switch (value)
+            {
+                case AlertType.Auction:
+                    serializer.Serialize(writer, "AUCTION");
+                    return;
+                case AlertType.Overload:
+                    serializer.Serialize(writer, "OVERLOAD");
+                    return;
+                case AlertType.Spam:
+                    serializer.Serialize(writer, "SPAM");
+                    return;
+                case AlertType.Trade:
+                    serializer.Serialize(writer, "TRADE");
+                    return;
+            }
+            throw new Exception("Cannot marshal type AlertType");
+        }
+
+        public static readonly AlertTypeConverter Singleton = new AlertTypeConverter();
     }
 }
