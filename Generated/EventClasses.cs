@@ -22,6 +22,7 @@
 //    var positionSlotPartBuilder = PositionSlotPartBuilder.FromJson(jsonString);
 //    var positionSlotVolunteerEvent = PositionSlotVolunteerEvent.FromJson(jsonString);
 //    var preferenceEvent = PreferenceEvent.FromJson(jsonString);
+//    var pretalxApiKeyInvalidEvent = PretalxApiKeyInvalidEvent.FromJson(jsonString);
 //    var rewardPointsShareTokenEvent = RewardPointsShareTokenEvent.FromJson(jsonString);
 //    var rewardPointsTransactionPart = RewardPointsTransactionPart.FromJson(jsonString);
 //    var rewardPointsTransactionPartBuilder = RewardPointsTransactionPartBuilder.FromJson(jsonString);
@@ -568,6 +569,21 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+    }
+
+    public partial class PretalxApiKeyInvalidEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("apiKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string ApiKey { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
     }
 
     public partial class RewardPointsShareTokenEvent
@@ -1330,6 +1346,11 @@ namespace ShiftControl.Events
         public static PreferenceEvent FromJson(string json) => JsonConvert.DeserializeObject<PreferenceEvent>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class PretalxApiKeyInvalidEvent
+    {
+        public static PretalxApiKeyInvalidEvent FromJson(string json) => JsonConvert.DeserializeObject<PretalxApiKeyInvalidEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public partial class RewardPointsShareTokenEvent
     {
         public static RewardPointsShareTokenEvent FromJson(string json) => JsonConvert.DeserializeObject<RewardPointsShareTokenEvent>(json, ShiftControl.Events.Converter.Settings);
@@ -1450,6 +1471,7 @@ namespace ShiftControl.Events
         public static string ToJson(this PositionSlotPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this PositionSlotVolunteerEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this PreferenceEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this PretalxApiKeyInvalidEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RewardPointsShareTokenEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RewardPointsTransactionPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this RewardPointsTransactionPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
