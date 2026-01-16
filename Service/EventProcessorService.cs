@@ -72,6 +72,7 @@ public class EventProcessorService(
             {
                 var scope = provider.CreateScope();
                 var pushNotificationService = scope.ServiceProvider.GetRequiredService<PushNotificationService>(); /*  avoid db concurrency on same instance*/
+                var emailService = scope.ServiceProvider.GetRequiredService<MailService>();
                 var processor = scope.ServiceProvider.GetRequiredService(processorMapping.ProcessorType);
 
                 var buildPushMethod = processorMapping.ProcessorType.GetMethod("BuildPush");
@@ -95,9 +96,10 @@ public class EventProcessorService(
                 var emailMessage = await emailMessageTask;
 
                 logger.LogInformation("Push Message ({receiverCount} receivers): {notificationMessage}", pushMessage?.Recipients?.Count ?? 0, pushMessage);
-                logger.LogInformation("Email Message ({receiverCount} receivers): {notificationMessage}", emailMessage?.Recipients?.Count ?? 0, emailMessage);
+                logger.LogInformation("Email Message ({receiverCount} receivers): {notificationMessage}", emailMessage?.Recipients.Count ?? 0, emailMessage);
 
                 if(pushMessage is not null) await pushNotificationService.PublishPushNotification(pushMessage);
+                if(emailMessage is not null) await emailService.PublishEmail(emailMessage);
                 scope.Dispose();
             }
             catch (Exception ex)

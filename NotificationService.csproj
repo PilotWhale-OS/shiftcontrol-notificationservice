@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Keycloak.NETCore.Client" Version="1.0.2" />
+        <PackageReference Include="MailKit" Version="4.14.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />

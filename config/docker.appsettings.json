@@ -37,5 +37,12 @@
   },
   "Shiftservice": {
     "BaseUrl": "http://shiftservice:8080/"
+  },
+  "Email": {
+    "EnableSending": false,
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "SmtpUsername": "0tobibot0@gmail.com",
+    "SmtpPassword": "bftu xhsc daue vibm"
   }
 }

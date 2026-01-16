@@ -27,7 +27,7 @@ public class VolunteerJoinedNotificationProcessor(
         return new PushNotification(
             recipients.Select(rec => rec.Volunteer.Id).ToList(),
             "Volunteer Joined",
-            $"{joinedVolunteer.Volunteer.FistName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
+            $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
             $@"/plans/{eventData.ShiftPlan.Id}",
             false,

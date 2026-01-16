@@ -1,5 +1,6 @@
 ﻿﻿using System.Globalization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+ using System.Threading.Channels;
+ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NotificationService.Classes;
 using NotificationService.Database;
 using NotificationService.Hubs.Implementation;
@@ -39,6 +40,7 @@ class Program
             .Configure<DbSettings>(builder.Configuration.GetSection("Db"))
             .Configure<KeycloakSettings>(builder.Configuration.GetSection("Keycloak"))
             .Configure<ShiftserviceSettings>(builder.Configuration.GetSection("Shiftservice"))
+            .Configure<EmailSettings>(builder.Configuration.GetSection("Email"))
             .AddDbContext<NotificationServiceDbContext>()
             .AddNotificationProcessors(pb => pb
                 .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
@@ -49,7 +51,10 @@ class Program
             .AddScoped<PushNotificationService>()
             .AddScoped<EventProcessorService>()
             .AddScoped<ShiftserviceApiClientService>()
+            .AddScoped<MailService>()
+            .AddSingleton(Channel.CreateUnbounded<EmailNotification>())
             .AddHostedService<RabbitMqService>()
+            .AddHostedService<MailClient>()
             .BuildServiceProvider();
 
         builder.WebHost.ConfigureKestrel(options =>
