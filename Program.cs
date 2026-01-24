@@ -43,8 +43,11 @@ class Program
             .Configure<EmailSettings>(builder.Configuration.GetSection("Email"))
             .AddDbContext<NotificationServiceDbContext>()
             .AddNotificationProcessors(pb => pb
-                .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
-                .AddProcessor<ShiftPlanVolunteerEvent, PlannerJoinedNotificationProcessor>("shiftcontrol.shiftplan.joined.planner.#")
+                // ADMIN
+                .AddProcessor<ShiftPlanVolunteerEvent, PlannerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.planner.#")
+                // PLANNER
+                .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
+                // VOLUNTEER
                 .Build()
             )
             .AddSingleton<KeycloakService>()

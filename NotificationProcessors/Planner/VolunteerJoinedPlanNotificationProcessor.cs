@@ -5,8 +5,8 @@ using ShiftControl.Events;
 
 namespace NotificationService.Notifications;
 
-public class VolunteerJoinedNotificationProcessor(
-    ILogger<VolunteerJoinedNotificationProcessor> logger,
+public class VolunteerJoinedPlanNotificationProcessor(
+    ILogger<VolunteerJoinedPlanNotificationProcessor> logger,
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<ShiftPlanVolunteerEvent>
 {
