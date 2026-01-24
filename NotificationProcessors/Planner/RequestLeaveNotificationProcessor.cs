@@ -10,9 +10,31 @@ public class RequestLeaveNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<PositionSlotVolunteerEvent>
 {
-    public Task<PushNotification?> BuildPush(PositionSlotVolunteerEvent eventData)
+    public async Task<PushNotification?> BuildPush(PositionSlotVolunteerEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_REQUEST,
+            // TODO add shiftplanid
+            RelatedShiftPlanId = null,
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Leave Request",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID/plans?planId=TODO_INSERT_PLAN_ID&mode=assignments&status=AUCTION_REQUEST_FOR_UNASSIGN",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)

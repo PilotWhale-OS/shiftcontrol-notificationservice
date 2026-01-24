@@ -10,9 +10,30 @@ public class TradeDeclinedNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<TradeEvent>
 {
-    public Task<PushNotification?> BuildPush(TradeEvent eventData)
+    public async Task<PushNotification?> BuildPush(TradeEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.Trade.RequestedAssignment.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Trade Declined",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(TradeEvent eventData)

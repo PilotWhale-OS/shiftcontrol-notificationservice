@@ -10,9 +10,31 @@ public class TradeCompletedNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<AssignmentSwitchEvent>
 {
-    public Task<PushNotification?> BuildPush(AssignmentSwitchEvent eventData)
+    public async Task<PushNotification?> BuildPush(AssignmentSwitchEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        // eventData includes the trade BEFORE it was accepted
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.RequestedAssignment.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Trade Accepted",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(AssignmentSwitchEvent eventData)

@@ -10,9 +10,29 @@ public class UserUnlockNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<UserEvent>
 {
-    public Task<PushNotification?> BuildPush(UserEvent eventData)
+    public async Task<PushNotification?> BuildPush(UserEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
+            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Unlocked",
+            $"Your account has been unlocked!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(UserEvent eventData)

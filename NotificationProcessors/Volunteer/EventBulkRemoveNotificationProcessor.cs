@@ -10,9 +10,33 @@ public class EventBulkRemoveNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<UserEventBulkEvent>
 {
-    public Task<PushNotification?> BuildPush(UserEventBulkEvent eventData)
+    public async Task<PushNotification?> BuildPush(UserEventBulkEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var volunteerIds = eventData.Volunteers
+            .Select(v => v.Id)
+            .ToList();
+        
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
+            RelatedVolunteerIds = volunteerIds, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Shiftplan Unassignments",
+            $"You were unassigned from events!",
+            date,
+            $@"/events",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(UserEventBulkEvent eventData)

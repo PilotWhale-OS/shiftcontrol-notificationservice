@@ -29,7 +29,7 @@ public class VolunteerJoinedPlanNotificationProcessor(
             "Volunteer Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            $@"/plans/{eventData.ShiftPlan.Id}",
+            $@"/events/TODO_INSERT_EVENT_ID/plans/{eventData.ShiftPlan.Id}",
             false,
             null
             );

@@ -10,9 +10,33 @@ public class PlanBulkRemoveNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<UserPlanBulkEvent>
 {
-    public Task<PushNotification?> BuildPush(UserPlanBulkEvent eventData)
+    public async Task<PushNotification?> BuildPush(UserPlanBulkEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var volunteerIds = eventData.Volunteers
+            .Select(v => v.Id)
+            .ToList();
+
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
+            RelatedVolunteerIds = volunteerIds, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Roles Removed",
+            $"Some Roles have been removed from you!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(UserPlanBulkEvent eventData)

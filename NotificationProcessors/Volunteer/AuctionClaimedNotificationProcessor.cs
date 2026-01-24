@@ -10,9 +10,29 @@ public class AuctionClaimedNotificationProcessor(
     ShiftserviceApiClientService clientService
 ) : INotificationProcessor<AssignmentEvent>
 {
-    public Task<PushNotification?> BuildPush(AssignmentEvent eventData)
+    public async Task<PushNotification?> BuildPush(AssignmentEvent eventData)
     {
-        return Task.FromResult<PushNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            // TODO add oldAssigned User
+            RelatedVolunteerIds = {}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => rec.Volunteer.Id).ToList(),
+            "Auction Claimed",
+            $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!",
+            date,
+            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            false,
+            null
+            );    
     }
 
     public Task<EmailNotification?> BuildEmail(AssignmentEvent eventData)
