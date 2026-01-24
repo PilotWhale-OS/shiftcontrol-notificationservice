@@ -13,6 +13,7 @@
 //    var eventEvent = EventEvent.FromJson(jsonString);
 //    var eventPart = EventPart.FromJson(jsonString);
 //    var invitePart = InvitePart.FromJson(jsonString);
+//    var leavePlanEvent = LeavePlanEvent.FromJson(jsonString);
 //    var locationEvent = LocationEvent.FromJson(jsonString);
 //    var locationPart = LocationPart.FromJson(jsonString);
 //    var notificationSettingsEvent = NotificationSettingsEvent.FromJson(jsonString);
@@ -43,6 +44,10 @@
 //    var trustAlertEvent = TrustAlertEvent.FromJson(jsonString);
 //    var trustAlertPart = TrustAlertPart.FromJson(jsonString);
 //    var trustAlertPartBuilder = TrustAlertPartBuilder.FromJson(jsonString);
+//    var userEvent = UserEvent.FromJson(jsonString);
+//    var userEventBulkEvent = UserEventBulkEvent.FromJson(jsonString);
+//    var userPlanBulkEvent = UserPlanBulkEvent.FromJson(jsonString);
+//    var volunteerPart = VolunteerPart.FromJson(jsonString);
 
 namespace ShiftControl.Events
 {
@@ -370,6 +375,66 @@ namespace ShiftControl.Events
 
         [JsonProperty("shiftPlanId", NullValueHandling = NullValueHandling.Ignore)]
         public string ShiftPlanId { get; set; }
+    }
+
+    public partial class LeavePlanEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("deletedAssignments", NullValueHandling = NullValueHandling.Ignore)]
+        public DeletedAssignmentElement[] DeletedAssignments { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        [JsonProperty("volunteer", NullValueHandling = NullValueHandling.Ignore)]
+        public LeavePlanEventVolunteer Volunteer { get; set; }
+    }
+
+    public partial class DeletedAssignmentElement
+    {
+        [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
+        public DeletedAssignmentPositionSlot PositionSlot { get; set; }
+
+        [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
+        public AssignmentStatus? Status { get; set; }
+
+        [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
+        public string VolunteerId { get; set; }
+    }
+
+    public partial class DeletedAssignmentPositionSlot
+    {
+        [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
+        public string PositionSlotDescription { get; set; }
+
+        [JsonProperty("positionSlotId", NullValueHandling = NullValueHandling.Ignore)]
+        public long? PositionSlotId { get; set; }
+
+        [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
+        public string PositionSlotName { get; set; }
+    }
+
+    public partial class LeavePlanEventVolunteer
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockedPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] LockedPlans { get; set; }
+
+        [JsonProperty("planningPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] PlanningPlans { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] VolunteeringPlans { get; set; }
     }
 
     public partial class LocationEvent
@@ -1238,13 +1303,172 @@ namespace ShiftControl.Events
     {
     }
 
+    public partial class UserEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        [JsonProperty("volunteer", NullValueHandling = NullValueHandling.Ignore)]
+        public UserEventVolunteer Volunteer { get; set; }
+    }
+
+    public partial class UserEventVolunteer
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockedPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] LockedPlans { get; set; }
+
+        [JsonProperty("planningPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] PlanningPlans { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] VolunteeringPlans { get; set; }
+    }
+
+    public partial class UserEventBulkEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("plans", NullValueHandling = NullValueHandling.Ignore)]
+        public PlanElement[] Plans { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        [JsonProperty("volunteers", NullValueHandling = NullValueHandling.Ignore)]
+        public VolunteerElement[] Volunteers { get; set; }
+    }
+
+    public partial class PlanElement
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockStatus", NullValueHandling = NullValueHandling.Ignore)]
+        public LockStatus? LockStatus { get; set; }
+
+        [JsonProperty("longDescription", NullValueHandling = NullValueHandling.Ignore)]
+        public string LongDescription { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        [JsonProperty("shortDescription", NullValueHandling = NullValueHandling.Ignore)]
+        public string ShortDescription { get; set; }
+    }
+
+    public partial class VolunteerElement
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockedPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] LockedPlans { get; set; }
+
+        [JsonProperty("planningPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] PlanningPlans { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] VolunteeringPlans { get; set; }
+    }
+
+    public partial class UserPlanBulkEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public RoleElement[] Roles { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        [JsonProperty("volunteers", NullValueHandling = NullValueHandling.Ignore)]
+        public VolunteerClass[] Volunteers { get; set; }
+    }
+
+    public partial class RoleElement
+    {
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        [JsonProperty("selfAssignable", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? SelfAssignable { get; set; }
+
+        [JsonProperty("shiftPlanId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ShiftPlanId { get; set; }
+    }
+
+    public partial class VolunteerClass
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockedPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] LockedPlans { get; set; }
+
+        [JsonProperty("planningPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] PlanningPlans { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] VolunteeringPlans { get; set; }
+    }
+
+    public partial class VolunteerPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("lockedPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] LockedPlans { get; set; }
+
+        [JsonProperty("planningPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] PlanningPlans { get; set; }
+
+        [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Roles { get; set; }
+
+        [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] VolunteeringPlans { get; set; }
+    }
+
     public enum AssignmentStatus { Accepted, Auction, AuctionRequestForUnassign, RequestForAssignment };
 
     public enum InvitePartType { PlannerJoin, VolunteerJoin };
 
     public enum ChannelElement { Email, Push };
 
-    public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, PlannerTrustAlertTriggered, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedAction, VolunteerAutoAssigned, VolunteerShiftReminder, VolunteerTradeRequested, VolunteerTradesAuctionsRequestsChanged };
+    public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, AdminTrustAlertReceived, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedJoin, PlannerVolunteerRequestedLeave, VolunteerAuctionClaimed, VolunteerAutoAssigned, VolunteerPlansAdded, VolunteerPlansLocked, VolunteerPlansRemoved, VolunteerPlansReset, VolunteerPlansUnlocked, VolunteerPlansUpdated, VolunteerRequestedJoinAccepted, VolunteerRequestedJoinDeclined, VolunteerRequestedLeaveAccepted, VolunteerRequestedLeaveDeclined, VolunteerRolesAdded, VolunteerRolesRemoved, VolunteerRolesUpdated, VolunteerShiftReminder, VolunteerTradeAccepted, VolunteerTradeDeclined, VolunteerTradeRequested };
 
     public enum RewardPointsTransactionPartType { Earn, ManualAdjust, Reversal };
 
@@ -1299,6 +1523,11 @@ namespace ShiftControl.Events
     public partial class InvitePart
     {
         public static InvitePart FromJson(string json) => JsonConvert.DeserializeObject<InvitePart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class LeavePlanEvent
+    {
+        public static LeavePlanEvent FromJson(string json) => JsonConvert.DeserializeObject<LeavePlanEvent>(json, ShiftControl.Events.Converter.Settings);
     }
 
     public partial class LocationEvent
@@ -1451,6 +1680,26 @@ namespace ShiftControl.Events
         public static TrustAlertPartBuilder FromJson(string json) => JsonConvert.DeserializeObject<TrustAlertPartBuilder>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class UserEvent
+    {
+        public static UserEvent FromJson(string json) => JsonConvert.DeserializeObject<UserEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class UserEventBulkEvent
+    {
+        public static UserEventBulkEvent FromJson(string json) => JsonConvert.DeserializeObject<UserEventBulkEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class UserPlanBulkEvent
+    {
+        public static UserPlanBulkEvent FromJson(string json) => JsonConvert.DeserializeObject<UserPlanBulkEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class VolunteerPart
+    {
+        public static VolunteerPart FromJson(string json) => JsonConvert.DeserializeObject<VolunteerPart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public static class Serialize
     {
         public static string ToJson(this ActivityEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1462,6 +1711,7 @@ namespace ShiftControl.Events
         public static string ToJson(this EventEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this EventPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this InvitePart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this LeavePlanEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this LocationEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this LocationPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this NotificationSettingsEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1492,6 +1742,10 @@ namespace ShiftControl.Events
         public static string ToJson(this TrustAlertEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TrustAlertPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TrustAlertPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this UserEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this UserEventBulkEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this UserPlanBulkEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this VolunteerPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
     }
 
     internal static class Converter
@@ -1663,18 +1917,50 @@ namespace ShiftControl.Events
                     return NotificationSettingsType.AdminPlannerJoinedPlan;
                 case "ADMIN_REWARD_SYNC_USED":
                     return NotificationSettingsType.AdminRewardSyncUsed;
-                case "PLANNER_TRUST_ALERT_TRIGGERED":
-                    return NotificationSettingsType.PlannerTrustAlertTriggered;
+                case "ADMIN_TRUST_ALERT_RECEIVED":
+                    return NotificationSettingsType.AdminTrustAlertReceived;
                 case "PLANNER_VOLUNTEER_JOINED_PLAN":
                     return NotificationSettingsType.PlannerVolunteerJoinedPlan;
-                case "PLANNER_VOLUNTEER_REQUESTED_ACTION":
-                    return NotificationSettingsType.PlannerVolunteerRequestedAction;
+                case "PLANNER_VOLUNTEER_REQUESTED_JOIN":
+                    return NotificationSettingsType.PlannerVolunteerRequestedJoin;
+                case "PLANNER_VOLUNTEER_REQUESTED_LEAVE":
+                    return NotificationSettingsType.PlannerVolunteerRequestedLeave;
+                case "VOLUNTEER_AUCTION_CLAIMED":
+                    return NotificationSettingsType.VolunteerAuctionClaimed;
                 case "VOLUNTEER_AUTO_ASSIGNED":
                     return NotificationSettingsType.VolunteerAutoAssigned;
+                case "VOLUNTEER_PLANS_ADDED":
+                    return NotificationSettingsType.VolunteerPlansAdded;
+                case "VOLUNTEER_PLANS_LOCKED":
+                    return NotificationSettingsType.VolunteerPlansLocked;
+                case "VOLUNTEER_PLANS_REMOVED":
+                    return NotificationSettingsType.VolunteerPlansRemoved;
+                case "VOLUNTEER_PLANS_RESET":
+                    return NotificationSettingsType.VolunteerPlansReset;
+                case "VOLUNTEER_PLANS_UNLOCKED":
+                    return NotificationSettingsType.VolunteerPlansUnlocked;
+                case "VOLUNTEER_PLANS_UPDATED":
+                    return NotificationSettingsType.VolunteerPlansUpdated;
+                case "VOLUNTEER_REQUESTED_JOIN_ACCEPTED":
+                    return NotificationSettingsType.VolunteerRequestedJoinAccepted;
+                case "VOLUNTEER_REQUESTED_JOIN_DECLINED":
+                    return NotificationSettingsType.VolunteerRequestedJoinDeclined;
+                case "VOLUNTEER_REQUESTED_LEAVE_ACCEPTED":
+                    return NotificationSettingsType.VolunteerRequestedLeaveAccepted;
+                case "VOLUNTEER_REQUESTED_LEAVE_DECLINED":
+                    return NotificationSettingsType.VolunteerRequestedLeaveDeclined;
+                case "VOLUNTEER_ROLES_ADDED":
+                    return NotificationSettingsType.VolunteerRolesAdded;
+                case "VOLUNTEER_ROLES_REMOVED":
+                    return NotificationSettingsType.VolunteerRolesRemoved;
+                case "VOLUNTEER_ROLES_UPDATED":
+                    return NotificationSettingsType.VolunteerRolesUpdated;
                 case "VOLUNTEER_SHIFT_REMINDER":
                     return NotificationSettingsType.VolunteerShiftReminder;
-                case "VOLUNTEER_TRADES_AUCTIONS_REQUESTS_CHANGED":
-                    return NotificationSettingsType.VolunteerTradesAuctionsRequestsChanged;
+                case "VOLUNTEER_TRADE_ACCEPTED":
+                    return NotificationSettingsType.VolunteerTradeAccepted;
+                case "VOLUNTEER_TRADE_DECLINED":
+                    return NotificationSettingsType.VolunteerTradeDeclined;
                 case "VOLUNTEER_TRADE_REQUESTED":
                     return NotificationSettingsType.VolunteerTradeRequested;
             }
@@ -1697,23 +1983,71 @@ namespace ShiftControl.Events
                 case NotificationSettingsType.AdminRewardSyncUsed:
                     serializer.Serialize(writer, "ADMIN_REWARD_SYNC_USED");
                     return;
-                case NotificationSettingsType.PlannerTrustAlertTriggered:
-                    serializer.Serialize(writer, "PLANNER_TRUST_ALERT_TRIGGERED");
+                case NotificationSettingsType.AdminTrustAlertReceived:
+                    serializer.Serialize(writer, "ADMIN_TRUST_ALERT_RECEIVED");
                     return;
                 case NotificationSettingsType.PlannerVolunteerJoinedPlan:
                     serializer.Serialize(writer, "PLANNER_VOLUNTEER_JOINED_PLAN");
                     return;
-                case NotificationSettingsType.PlannerVolunteerRequestedAction:
-                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUESTED_ACTION");
+                case NotificationSettingsType.PlannerVolunteerRequestedJoin:
+                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUESTED_JOIN");
+                    return;
+                case NotificationSettingsType.PlannerVolunteerRequestedLeave:
+                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUESTED_LEAVE");
+                    return;
+                case NotificationSettingsType.VolunteerAuctionClaimed:
+                    serializer.Serialize(writer, "VOLUNTEER_AUCTION_CLAIMED");
                     return;
                 case NotificationSettingsType.VolunteerAutoAssigned:
                     serializer.Serialize(writer, "VOLUNTEER_AUTO_ASSIGNED");
                     return;
+                case NotificationSettingsType.VolunteerPlansAdded:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_ADDED");
+                    return;
+                case NotificationSettingsType.VolunteerPlansLocked:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_LOCKED");
+                    return;
+                case NotificationSettingsType.VolunteerPlansRemoved:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_REMOVED");
+                    return;
+                case NotificationSettingsType.VolunteerPlansReset:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_RESET");
+                    return;
+                case NotificationSettingsType.VolunteerPlansUnlocked:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_UNLOCKED");
+                    return;
+                case NotificationSettingsType.VolunteerPlansUpdated:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_UPDATED");
+                    return;
+                case NotificationSettingsType.VolunteerRequestedJoinAccepted:
+                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_JOIN_ACCEPTED");
+                    return;
+                case NotificationSettingsType.VolunteerRequestedJoinDeclined:
+                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_JOIN_DECLINED");
+                    return;
+                case NotificationSettingsType.VolunteerRequestedLeaveAccepted:
+                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_LEAVE_ACCEPTED");
+                    return;
+                case NotificationSettingsType.VolunteerRequestedLeaveDeclined:
+                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_LEAVE_DECLINED");
+                    return;
+                case NotificationSettingsType.VolunteerRolesAdded:
+                    serializer.Serialize(writer, "VOLUNTEER_ROLES_ADDED");
+                    return;
+                case NotificationSettingsType.VolunteerRolesRemoved:
+                    serializer.Serialize(writer, "VOLUNTEER_ROLES_REMOVED");
+                    return;
+                case NotificationSettingsType.VolunteerRolesUpdated:
+                    serializer.Serialize(writer, "VOLUNTEER_ROLES_UPDATED");
+                    return;
                 case NotificationSettingsType.VolunteerShiftReminder:
                     serializer.Serialize(writer, "VOLUNTEER_SHIFT_REMINDER");
                     return;
-                case NotificationSettingsType.VolunteerTradesAuctionsRequestsChanged:
-                    serializer.Serialize(writer, "VOLUNTEER_TRADES_AUCTIONS_REQUESTS_CHANGED");
+                case NotificationSettingsType.VolunteerTradeAccepted:
+                    serializer.Serialize(writer, "VOLUNTEER_TRADE_ACCEPTED");
+                    return;
+                case NotificationSettingsType.VolunteerTradeDeclined:
+                    serializer.Serialize(writer, "VOLUNTEER_TRADE_DECLINED");
                     return;
                 case NotificationSettingsType.VolunteerTradeRequested:
                     serializer.Serialize(writer, "VOLUNTEER_TRADE_REQUESTED");
