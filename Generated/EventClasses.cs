@@ -1468,7 +1468,7 @@ namespace ShiftControl.Events
 
     public enum ChannelElement { Email, Push };
 
-    public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, AdminTrustAlertReceived, PlannerVolunteerJoinedPlan, PlannerVolunteerRequestedJoin, PlannerVolunteerRequestedLeave, VolunteerAuctionClaimed, VolunteerAutoAssigned, VolunteerPlansAdded, VolunteerPlansLocked, VolunteerPlansRemoved, VolunteerPlansReset, VolunteerPlansUnlocked, VolunteerPlansUpdated, VolunteerRequestedJoinAccepted, VolunteerRequestedJoinDeclined, VolunteerRequestedLeaveAccepted, VolunteerRequestedLeaveDeclined, VolunteerRolesAdded, VolunteerRolesRemoved, VolunteerRolesUpdated, VolunteerShiftReminder, VolunteerTradeAccepted, VolunteerTradeDeclined, VolunteerTradeRequested };
+    public enum NotificationSettingsType { AdminPlannerJoinedPlan, AdminRewardSyncUsed, AdminTrustAlertReceived, PlannerVolunteerJoinedPlan, PlannerVolunteerRequest, VolunteerAutoAssigned, VolunteerPlansChanged, VolunteerRequestHandled, VolunteerRolesChanged, VolunteerShiftReminder, VolunteerStatusChanged, VolunteerTradeOrAuction };
 
     public enum RewardPointsTransactionPartType { Earn, ManualAdjust, Reversal };
 
@@ -1921,48 +1921,22 @@ namespace ShiftControl.Events
                     return NotificationSettingsType.AdminTrustAlertReceived;
                 case "PLANNER_VOLUNTEER_JOINED_PLAN":
                     return NotificationSettingsType.PlannerVolunteerJoinedPlan;
-                case "PLANNER_VOLUNTEER_REQUESTED_JOIN":
-                    return NotificationSettingsType.PlannerVolunteerRequestedJoin;
-                case "PLANNER_VOLUNTEER_REQUESTED_LEAVE":
-                    return NotificationSettingsType.PlannerVolunteerRequestedLeave;
-                case "VOLUNTEER_AUCTION_CLAIMED":
-                    return NotificationSettingsType.VolunteerAuctionClaimed;
+                case "PLANNER_VOLUNTEER_REQUEST":
+                    return NotificationSettingsType.PlannerVolunteerRequest;
                 case "VOLUNTEER_AUTO_ASSIGNED":
                     return NotificationSettingsType.VolunteerAutoAssigned;
-                case "VOLUNTEER_PLANS_ADDED":
-                    return NotificationSettingsType.VolunteerPlansAdded;
-                case "VOLUNTEER_PLANS_LOCKED":
-                    return NotificationSettingsType.VolunteerPlansLocked;
-                case "VOLUNTEER_PLANS_REMOVED":
-                    return NotificationSettingsType.VolunteerPlansRemoved;
-                case "VOLUNTEER_PLANS_RESET":
-                    return NotificationSettingsType.VolunteerPlansReset;
-                case "VOLUNTEER_PLANS_UNLOCKED":
-                    return NotificationSettingsType.VolunteerPlansUnlocked;
-                case "VOLUNTEER_PLANS_UPDATED":
-                    return NotificationSettingsType.VolunteerPlansUpdated;
-                case "VOLUNTEER_REQUESTED_JOIN_ACCEPTED":
-                    return NotificationSettingsType.VolunteerRequestedJoinAccepted;
-                case "VOLUNTEER_REQUESTED_JOIN_DECLINED":
-                    return NotificationSettingsType.VolunteerRequestedJoinDeclined;
-                case "VOLUNTEER_REQUESTED_LEAVE_ACCEPTED":
-                    return NotificationSettingsType.VolunteerRequestedLeaveAccepted;
-                case "VOLUNTEER_REQUESTED_LEAVE_DECLINED":
-                    return NotificationSettingsType.VolunteerRequestedLeaveDeclined;
-                case "VOLUNTEER_ROLES_ADDED":
-                    return NotificationSettingsType.VolunteerRolesAdded;
-                case "VOLUNTEER_ROLES_REMOVED":
-                    return NotificationSettingsType.VolunteerRolesRemoved;
-                case "VOLUNTEER_ROLES_UPDATED":
-                    return NotificationSettingsType.VolunteerRolesUpdated;
+                case "VOLUNTEER_PLANS_CHANGED":
+                    return NotificationSettingsType.VolunteerPlansChanged;
+                case "VOLUNTEER_REQUEST_HANDLED":
+                    return NotificationSettingsType.VolunteerRequestHandled;
+                case "VOLUNTEER_ROLES_CHANGED":
+                    return NotificationSettingsType.VolunteerRolesChanged;
                 case "VOLUNTEER_SHIFT_REMINDER":
                     return NotificationSettingsType.VolunteerShiftReminder;
-                case "VOLUNTEER_TRADE_ACCEPTED":
-                    return NotificationSettingsType.VolunteerTradeAccepted;
-                case "VOLUNTEER_TRADE_DECLINED":
-                    return NotificationSettingsType.VolunteerTradeDeclined;
-                case "VOLUNTEER_TRADE_REQUESTED":
-                    return NotificationSettingsType.VolunteerTradeRequested;
+                case "VOLUNTEER_STATUS_CHANGED":
+                    return NotificationSettingsType.VolunteerStatusChanged;
+                case "VOLUNTEER_TRADE_OR_AUCTION":
+                    return NotificationSettingsType.VolunteerTradeOrAuction;
             }
             throw new Exception("Cannot unmarshal type NotificationSettingsType");
         }
@@ -1989,68 +1963,29 @@ namespace ShiftControl.Events
                 case NotificationSettingsType.PlannerVolunteerJoinedPlan:
                     serializer.Serialize(writer, "PLANNER_VOLUNTEER_JOINED_PLAN");
                     return;
-                case NotificationSettingsType.PlannerVolunteerRequestedJoin:
-                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUESTED_JOIN");
-                    return;
-                case NotificationSettingsType.PlannerVolunteerRequestedLeave:
-                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUESTED_LEAVE");
-                    return;
-                case NotificationSettingsType.VolunteerAuctionClaimed:
-                    serializer.Serialize(writer, "VOLUNTEER_AUCTION_CLAIMED");
+                case NotificationSettingsType.PlannerVolunteerRequest:
+                    serializer.Serialize(writer, "PLANNER_VOLUNTEER_REQUEST");
                     return;
                 case NotificationSettingsType.VolunteerAutoAssigned:
                     serializer.Serialize(writer, "VOLUNTEER_AUTO_ASSIGNED");
                     return;
-                case NotificationSettingsType.VolunteerPlansAdded:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_ADDED");
+                case NotificationSettingsType.VolunteerPlansChanged:
+                    serializer.Serialize(writer, "VOLUNTEER_PLANS_CHANGED");
                     return;
-                case NotificationSettingsType.VolunteerPlansLocked:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_LOCKED");
+                case NotificationSettingsType.VolunteerRequestHandled:
+                    serializer.Serialize(writer, "VOLUNTEER_REQUEST_HANDLED");
                     return;
-                case NotificationSettingsType.VolunteerPlansRemoved:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_REMOVED");
-                    return;
-                case NotificationSettingsType.VolunteerPlansReset:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_RESET");
-                    return;
-                case NotificationSettingsType.VolunteerPlansUnlocked:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_UNLOCKED");
-                    return;
-                case NotificationSettingsType.VolunteerPlansUpdated:
-                    serializer.Serialize(writer, "VOLUNTEER_PLANS_UPDATED");
-                    return;
-                case NotificationSettingsType.VolunteerRequestedJoinAccepted:
-                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_JOIN_ACCEPTED");
-                    return;
-                case NotificationSettingsType.VolunteerRequestedJoinDeclined:
-                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_JOIN_DECLINED");
-                    return;
-                case NotificationSettingsType.VolunteerRequestedLeaveAccepted:
-                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_LEAVE_ACCEPTED");
-                    return;
-                case NotificationSettingsType.VolunteerRequestedLeaveDeclined:
-                    serializer.Serialize(writer, "VOLUNTEER_REQUESTED_LEAVE_DECLINED");
-                    return;
-                case NotificationSettingsType.VolunteerRolesAdded:
-                    serializer.Serialize(writer, "VOLUNTEER_ROLES_ADDED");
-                    return;
-                case NotificationSettingsType.VolunteerRolesRemoved:
-                    serializer.Serialize(writer, "VOLUNTEER_ROLES_REMOVED");
-                    return;
-                case NotificationSettingsType.VolunteerRolesUpdated:
-                    serializer.Serialize(writer, "VOLUNTEER_ROLES_UPDATED");
+                case NotificationSettingsType.VolunteerRolesChanged:
+                    serializer.Serialize(writer, "VOLUNTEER_ROLES_CHANGED");
                     return;
                 case NotificationSettingsType.VolunteerShiftReminder:
                     serializer.Serialize(writer, "VOLUNTEER_SHIFT_REMINDER");
                     return;
-                case NotificationSettingsType.VolunteerTradeAccepted:
-                    serializer.Serialize(writer, "VOLUNTEER_TRADE_ACCEPTED");
+                case NotificationSettingsType.VolunteerStatusChanged:
+                    serializer.Serialize(writer, "VOLUNTEER_STATUS_CHANGED");
                     return;
-                case NotificationSettingsType.VolunteerTradeDeclined:
-                    serializer.Serialize(writer, "VOLUNTEER_TRADE_DECLINED");
-                    return;
-                case NotificationSettingsType.VolunteerTradeRequested:
-                    serializer.Serialize(writer, "VOLUNTEER_TRADE_REQUESTED");
+                case NotificationSettingsType.VolunteerTradeOrAuction:
+                    serializer.Serialize(writer, "VOLUNTEER_TRADE_OR_AUCTION");
                     return;
             }
             throw new Exception("Cannot marshal type NotificationSettingsType");
