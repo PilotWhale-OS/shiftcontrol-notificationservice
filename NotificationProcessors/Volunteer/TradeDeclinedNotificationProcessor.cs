@@ -36,8 +36,25 @@ public class TradeDeclinedNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(TradeEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(TradeEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.Trade.RequestedAssignment.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Trade Declined",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!"
+            );    
     }
 }

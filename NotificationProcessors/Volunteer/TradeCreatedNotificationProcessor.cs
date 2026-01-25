@@ -36,8 +36,26 @@ public class TradeCreatedNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(TradeEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(TradeEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            RelatedVolunteerIds = {eventData.Trade.RequestedAssignment.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.Trade.OfferingAssignment.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Trade Requested",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} offers you '{eventData.Trade.OfferingAssignment.PositionSlot.PositionSlotName}' for '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!"
+            );    
     }
+
 }

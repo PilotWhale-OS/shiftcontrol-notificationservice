@@ -35,8 +35,24 @@ public class PlanBulkUpdateNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(UserEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(UserEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
+            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Roles Updated",
+            $"Your assigned roles have changed!"
+            );    
     }
 }

@@ -35,8 +35,24 @@ public class VolunteerJoinedPlanNotificationProcessor(
             );
     }
 
-    public Task<EmailNotification?> BuildEmail(ShiftPlanVolunteerEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(ShiftPlanVolunteerEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_JOINED_PLAN,
+            RelatedShiftPlanId = eventData.ShiftPlan.Id,
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER
+        });
+
+        var joinedVolunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Volunteer Joined",
+            $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'."
+            );
     }
 }

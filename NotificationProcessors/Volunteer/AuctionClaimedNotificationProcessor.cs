@@ -35,8 +35,24 @@ public class AuctionClaimedNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(AssignmentEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(AssignmentEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
+            // TODO add oldAssigned User
+            RelatedVolunteerIds = {}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new PushNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Auction Claimed",
+            $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!"
+            );    
     }
 }

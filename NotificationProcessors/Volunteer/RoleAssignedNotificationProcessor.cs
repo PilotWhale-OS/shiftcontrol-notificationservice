@@ -35,8 +35,24 @@ public class RoleAssignedNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(RoleVolunteerEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(RoleVolunteerEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
+            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Role Assigned",
+            $"You have been assigned the role '{eventData.Role.Name}'!"
+            );    
     }
 }

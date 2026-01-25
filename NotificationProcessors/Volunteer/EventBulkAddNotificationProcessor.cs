@@ -39,8 +39,29 @@ public class EventBulkAddNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(UserEventBulkEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(UserEventBulkEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var volunteerIds = eventData.Volunteers
+            .Select(v => v.Id)
+            .ToList();
+
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
+            RelatedVolunteerIds = volunteerIds, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Shiftplan Assignment",
+            $"You were added to new events!"
+            );    
     }
+
 }

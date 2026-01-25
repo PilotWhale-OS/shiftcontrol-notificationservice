@@ -37,8 +37,26 @@ public class RequestJoinNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_REQUEST,
+            // TODO add shiftplanid
+            RelatedShiftPlanId = null,
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Signup Request",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to join slot '{eventData.PositionSlot.PositionSlotName}'!"
+            );    
     }
 }

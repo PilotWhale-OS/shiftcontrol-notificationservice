@@ -35,8 +35,24 @@ public class TrustAlertNotificationProcessor(
             );
     }
 
-    public Task<EmailNotification?> BuildEmail(TrustAlertEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(TrustAlertEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.ADMIN_TRUST_ALERT_RECEIVED,
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.ADMIN
+        });
+        if (recipients.Count == 0) return null;
+
+        var volunteer = await clientService.GetRecipientInfoAsync(eventData.TrustAlertPart.VolunteerId);
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Trust Alert",
+            $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed."
+            );
     }
 }

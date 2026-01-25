@@ -35,8 +35,24 @@ public class RequestLeaveDeclinedNotificationProcessor(
             );    
     }
 
-    public Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
     {
-        return Task.FromResult<EmailNotification?>(null);
+        var recipients = await clientService.GetRecipientsForNotificationAsync(new()
+        {
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_REQUEST_HANDLED,
+            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
+        });
+        if (recipients.Count == 0) return null;
+
+
+        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+
+        return new EmailNotification(
+            recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
+            "Leave Request Declined",
+            $"Your request to leave slot '{eventData.PositionSlot.PositionSlotName}' was declined!"
+            );    
     }
 }
