@@ -10,8 +10,10 @@
 //    var assignmentPart = AssignmentPart.FromJson(jsonString);
 //    var assignmentPartBuilder = AssignmentPartBuilder.FromJson(jsonString);
 //    var assignmentSwitchEvent = AssignmentSwitchEvent.FromJson(jsonString);
+//    var claimedAuctionEvent = ClaimedAuctionEvent.FromJson(jsonString);
 //    var eventEvent = EventEvent.FromJson(jsonString);
 //    var eventPart = EventPart.FromJson(jsonString);
+//    var eventRefPart = EventRefPart.FromJson(jsonString);
 //    var invitePart = InvitePart.FromJson(jsonString);
 //    var leavePlanEvent = LeavePlanEvent.FromJson(jsonString);
 //    var locationEvent = LocationEvent.FromJson(jsonString);
@@ -36,6 +38,7 @@
 //    var shiftPlanEvent = ShiftPlanEvent.FromJson(jsonString);
 //    var shiftPlanInviteEvent = ShiftPlanInviteEvent.FromJson(jsonString);
 //    var shiftPlanPart = ShiftPlanPart.FromJson(jsonString);
+//    var shiftPlanRefPart = ShiftPlanRefPart.FromJson(jsonString);
 //    var shiftPlanVolunteerEvent = ShiftPlanVolunteerEvent.FromJson(jsonString);
 //    var timeConstraintEvent = TimeConstraintEvent.FromJson(jsonString);
 //    var timeConstraintPart = TimeConstraintPart.FromJson(jsonString);
@@ -65,6 +68,12 @@ namespace ShiftControl.Events
 
         [JsonProperty("activity", NullValueHandling = NullValueHandling.Ignore)]
         public Activity Activity { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -165,6 +174,12 @@ namespace ShiftControl.Events
         [JsonProperty("assignment", NullValueHandling = NullValueHandling.Ignore)]
         public Assignmentent Assignment { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
         public string RoutingKey { get; set; }
 
@@ -178,7 +193,7 @@ namespace ShiftControl.Events
     public partial class Assignmentent
     {
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
-        public AssignmentPositionSlot PositionSlot { get; set; }
+        public PurplePositionSlot PositionSlot { get; set; }
 
         [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
         public AssignmentStatus? Status { get; set; }
@@ -187,7 +202,7 @@ namespace ShiftControl.Events
         public string VolunteerId { get; set; }
     }
 
-    public partial class AssignmentPositionSlot
+    public partial class PurplePositionSlot
     {
         [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotDescription { get; set; }
@@ -197,6 +212,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public PurpleShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class PurpleShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public PurpleEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class PurpleEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class AssignmentPart
@@ -221,6 +260,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public PurplePart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class PurplePart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public FluffyPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class FluffyPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class AssignmentPartBuilder
@@ -231,6 +294,12 @@ namespace ShiftControl.Events
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("offeringAssignment", NullValueHandling = NullValueHandling.Ignore)]
         public AssignmentSwitchEventOfferingAssignment OfferingAssignment { get; set; }
@@ -248,7 +317,7 @@ namespace ShiftControl.Events
     public partial class AssignmentSwitchEventOfferingAssignment
     {
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
-        public PurplePositionSlot PositionSlot { get; set; }
+        public FluffyPositionSlot PositionSlot { get; set; }
 
         [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
         public AssignmentStatus? Status { get; set; }
@@ -257,7 +326,7 @@ namespace ShiftControl.Events
         public string VolunteerId { get; set; }
     }
 
-    public partial class PurplePositionSlot
+    public partial class FluffyPositionSlot
     {
         [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotDescription { get; set; }
@@ -267,6 +336,105 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public FluffyShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class FluffyShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public FluffyEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class FluffyEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class ClaimedAuctionEvent
+    {
+        [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
+        public string ActingUserId { get; set; }
+
+        [JsonProperty("assignment", NullValueHandling = NullValueHandling.Ignore)]
+        public AssignmentClass Assignment { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
+        [JsonProperty("oldVolunteerId", NullValueHandling = NullValueHandling.Ignore)]
+        public string OldVolunteerId { get; set; }
+
+        [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
+        public string RoutingKey { get; set; }
+
+        [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTimeOffset? Timestamp { get; set; }
+
+        [JsonProperty("traceId", NullValueHandling = NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+    }
+
+    public partial class AssignmentClass
+    {
+        [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
+        public TentacledPositionSlot PositionSlot { get; set; }
+
+        [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
+        public AssignmentStatus? Status { get; set; }
+
+        [JsonProperty("volunteerId", NullValueHandling = NullValueHandling.Ignore)]
+        public string VolunteerId { get; set; }
+    }
+
+    public partial class TentacledPositionSlot
+    {
+        [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
+        public string PositionSlotDescription { get; set; }
+
+        [JsonProperty("positionSlotId", NullValueHandling = NullValueHandling.Ignore)]
+        public long? PositionSlotId { get; set; }
+
+        [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
+        public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public TentacledShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class TentacledShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public TentacledEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class TentacledEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class EventEvent
@@ -274,8 +442,14 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
         [JsonProperty("event", NullValueHandling = NullValueHandling.Ignore)]
         public Eventevent Event { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -324,6 +498,15 @@ namespace ShiftControl.Events
 
         [JsonProperty("startTime", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? StartTime { get; set; }
+    }
+
+    public partial class EventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class InvitePart
@@ -385,6 +568,12 @@ namespace ShiftControl.Events
         [JsonProperty("deletedAssignments", NullValueHandling = NullValueHandling.Ignore)]
         public DeletedAssignmentElement[] DeletedAssignments { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
 
@@ -417,6 +606,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public StickyShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class StickyShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public StickyEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class StickyEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class LeavePlanEventVolunteer
@@ -441,6 +654,12 @@ namespace ShiftControl.Events
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public LocationEventLocation Location { get; set; }
@@ -493,6 +712,12 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("notificationSettings", NullValueHandling = NullValueHandling.Ignore)]
         public NotificationSettings NotificationSettings { get; set; }
 
@@ -529,6 +754,12 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
         public PositionSlotEventPositionSlot PositionSlot { get; set; }
 
@@ -552,6 +783,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndigoShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class IndigoShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndigoEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class IndigoEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class PositionSlotPart
@@ -564,6 +819,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public PositionSlotPartShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class PositionSlotPartShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public TentacledPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class TentacledPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class PositionSlotPartBuilder
@@ -574,6 +853,12 @@ namespace ShiftControl.Events
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
         public PositionSlotVolunteerEventPositionSlot PositionSlot { get; set; }
@@ -601,12 +886,42 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndecentShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class IndecentShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndecentEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class IndecentEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class PreferenceEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
         public PreferenceEventPositionSlot PositionSlot { get; set; }
@@ -634,6 +949,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public HilariousShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class HilariousShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public HilariousEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class HilariousEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class PretalxApiKeyInvalidEvent
@@ -643,6 +982,12 @@ namespace ShiftControl.Events
 
         [JsonProperty("apiKey", NullValueHandling = NullValueHandling.Ignore)]
         public string ApiKey { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -655,6 +1000,12 @@ namespace ShiftControl.Events
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("rewardPointsShareTokenPart", NullValueHandling = NullValueHandling.Ignore)]
         public RewardPointsShareToken RewardPointsShareTokenPart { get; set; }
@@ -715,6 +1066,12 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("rewardPointsTransactionPart", NullValueHandling = NullValueHandling.Ignore)]
         public RewardPoint RewardPointsTransactionPart { get; set; }
 
@@ -757,6 +1114,12 @@ namespace ShiftControl.Events
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("role", NullValueHandling = NullValueHandling.Ignore)]
         public RoleEventRole Role { get; set; }
@@ -809,8 +1172,17 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("role", NullValueHandling = NullValueHandling.Ignore)]
         public RoleVolunteerEventRole Role { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public RoleVolunteerEventShiftPlanRefPart ShiftPlanRefPart { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -840,10 +1212,37 @@ namespace ShiftControl.Events
         public string ShiftPlanId { get; set; }
     }
 
+    public partial class RoleVolunteerEventShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public AmbitiousEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class AmbitiousEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
     public partial class ShiftEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("shift", NullValueHandling = NullValueHandling.Ignore)]
         public Shift Shift { get; set; }
@@ -895,6 +1294,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public ShiftPlanRefPartClass ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class ShiftPlanRefPartClass
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public CunningEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class CunningEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class ShiftPart
@@ -937,12 +1360,42 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public ShiftPPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class ShiftPPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public StickyPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class StickyPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class ShiftPlanEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("shiftPlan", NullValueHandling = NullValueHandling.Ignore)]
         public ShiftPlanEventShiftPlan ShiftPlan { get; set; }
@@ -956,6 +1409,9 @@ namespace ShiftControl.Events
 
     public partial class ShiftPlanEventShiftPlan
     {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public MagentaEventRefPart EventRefPart { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -972,10 +1428,25 @@ namespace ShiftControl.Events
         public string ShortDescription { get; set; }
     }
 
+    public partial class MagentaEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
     public partial class ShiftPlanInviteEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("invite", NullValueHandling = NullValueHandling.Ignore)]
         public Invite Invite { get; set; }
@@ -1043,6 +1514,9 @@ namespace ShiftControl.Events
 
     public partial class ShiftPlanInviteEventShiftPlan
     {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public FriskyEventRefPart EventRefPart { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -1059,8 +1533,20 @@ namespace ShiftControl.Events
         public string ShortDescription { get; set; }
     }
 
+    public partial class FriskyEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
     public partial class ShiftPlanPart
     {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public ShiftPlanPartEventRefPart EventRefPart { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -1075,12 +1561,48 @@ namespace ShiftControl.Events
 
         [JsonProperty("shortDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string ShortDescription { get; set; }
+    }
+
+    public partial class ShiftPlanPartEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class ShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public RefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class RefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class ShiftPlanVolunteerEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("shiftPlan", NullValueHandling = NullValueHandling.Ignore)]
         public ShiftPlanVolunteerEventShiftPlan ShiftPlan { get; set; }
@@ -1097,6 +1619,9 @@ namespace ShiftControl.Events
 
     public partial class ShiftPlanVolunteerEventShiftPlan
     {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public MischievousEventRefPart EventRefPart { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -1113,10 +1638,25 @@ namespace ShiftControl.Events
         public string ShortDescription { get; set; }
     }
 
+    public partial class MischievousEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
     public partial class TimeConstraintEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("timeConstraint", NullValueHandling = NullValueHandling.Ignore)]
         public TimeConstraint TimeConstraint { get; set; }
@@ -1163,6 +1703,12 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("routingKey", NullValueHandling = NullValueHandling.Ignore)]
         public string RoutingKey { get; set; }
 
@@ -1194,7 +1740,7 @@ namespace ShiftControl.Events
     public partial class TradeOfferingAssignment
     {
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
-        public FluffyPositionSlot PositionSlot { get; set; }
+        public StickyPositionSlot PositionSlot { get; set; }
 
         [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
         public AssignmentStatus? Status { get; set; }
@@ -1203,7 +1749,7 @@ namespace ShiftControl.Events
         public string VolunteerId { get; set; }
     }
 
-    public partial class FluffyPositionSlot
+    public partial class StickyPositionSlot
     {
         [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotDescription { get; set; }
@@ -1213,6 +1759,30 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public AmbitiousShiftPlanRefPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class AmbitiousShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public BraggadociousEventRefPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class BraggadociousEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class TradePart
@@ -1233,7 +1803,7 @@ namespace ShiftControl.Events
     public partial class OfferingAssignment
     {
         [JsonProperty("positionSlot", NullValueHandling = NullValueHandling.Ignore)]
-        public TentacledPositionSlot PositionSlot { get; set; }
+        public IndigoPositionSlot PositionSlot { get; set; }
 
         [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
         public AssignmentStatus? Status { get; set; }
@@ -1242,7 +1812,7 @@ namespace ShiftControl.Events
         public string VolunteerId { get; set; }
     }
 
-    public partial class TentacledPositionSlot
+    public partial class IndigoPositionSlot
     {
         [JsonProperty("positionSlotDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotDescription { get; set; }
@@ -1252,12 +1822,42 @@ namespace ShiftControl.Events
 
         [JsonProperty("positionSlotName", NullValueHandling = NullValueHandling.Ignore)]
         public string PositionSlotName { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndigoPart ShiftPlanRefPart { get; set; }
+    }
+
+    public partial class IndigoPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public IndecentPart EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class IndecentPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class TrustAlertEvent
     {
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -1308,6 +1908,15 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
+        [JsonProperty("shiftPlanRefParts", NullValueHandling = NullValueHandling.Ignore)]
+        public ShiftPlanRefPartElement[] ShiftPlanRefParts { get; set; }
+
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
 
@@ -1316,6 +1925,27 @@ namespace ShiftControl.Events
 
         [JsonProperty("volunteer", NullValueHandling = NullValueHandling.Ignore)]
         public UserEventVolunteer Volunteer { get; set; }
+    }
+
+    public partial class ShiftPlanRefPartElement
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public EventRefPart1 EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class EventRefPart1
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class UserEventVolunteer
@@ -1341,6 +1971,12 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("plans", NullValueHandling = NullValueHandling.Ignore)]
         public PlanElement[] Plans { get; set; }
 
@@ -1356,6 +1992,9 @@ namespace ShiftControl.Events
 
     public partial class PlanElement
     {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public PlanEventRefPart EventRefPart { get; set; }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
@@ -1370,6 +2009,15 @@ namespace ShiftControl.Events
 
         [JsonProperty("shortDescription", NullValueHandling = NullValueHandling.Ignore)]
         public string ShortDescription { get; set; }
+    }
+
+    public partial class PlanEventRefPart
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class VolunteerElement
@@ -1395,8 +2043,17 @@ namespace ShiftControl.Events
         [JsonProperty("actingUserId", NullValueHandling = NullValueHandling.Ignore)]
         public string ActingUserId { get; set; }
 
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+
+        [JsonProperty("eventType", NullValueHandling = NullValueHandling.Ignore)]
+        public EventType? EventType { get; set; }
+
         [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
         public RoleElement[] Roles { get; set; }
+
+        [JsonProperty("shiftPlanRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public UserPlanBulkEventShiftPlanRefPart ShiftPlanRefPart { get; set; }
 
         [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? Timestamp { get; set; }
@@ -1424,6 +2081,27 @@ namespace ShiftControl.Events
 
         [JsonProperty("shiftPlanId", NullValueHandling = NullValueHandling.Ignore)]
         public string ShiftPlanId { get; set; }
+    }
+
+    public partial class UserPlanBulkEventShiftPlanRefPart
+    {
+        [JsonProperty("eventRefPart", NullValueHandling = NullValueHandling.Ignore)]
+        public EventRefPart2 EventRefPart { get; set; }
+
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    }
+
+    public partial class EventRefPart2
+    {
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Id { get; set; }
+
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
     }
 
     public partial class VolunteerClass
@@ -1461,6 +2139,8 @@ namespace ShiftControl.Events
         [JsonProperty("volunteeringPlans", NullValueHandling = NullValueHandling.Ignore)]
         public string[] VolunteeringPlans { get; set; }
     }
+
+    public enum EventType { ActivityCreated, ActivityDeleted, ActivityUpdated, AuctionCanceled, AuctionClaimed, AuctionCreated, EventCloned, EventCreated, EventDeleted, EventExported, EventImported, EventUpdated, LocationCreated, LocationDeleted, LocationUpdated, PositionslotCreated, PositionslotDeleted, PositionslotJoined, PositionslotLeft, PositionslotPreferenceUpdated, PositionslotRequestJoin, PositionslotRequestJoinAccepted, PositionslotRequestJoinDeclined, PositionslotRequestJoinWithdraw, PositionslotRequestLeave, PositionslotRequestLeaveAccepted, PositionslotRequestLeaveDeclined, PositionslotRequestLeaveWithdraw, PositionslotUpdated, PretalxApiKeyInvalid, RewardpointsSharetokenCreated, RewardpointsSharetokenDeleted, RewardpointsTransactionCreated, RewardpointsTransactionFailed, RoleAssigned, RoleCreated, RoleDeleted, RoleUnassigned, RoleUpdated, ShiftCreated, ShiftDeleted, ShiftUpdated, ShiftplanCreated, ShiftplanDeleted, ShiftplanInviteCreated, ShiftplanInviteDeleted, ShiftplanInviteRevoked, ShiftplanJoinedPlanner, ShiftplanJoinedVolunteer, ShiftplanLeave, ShiftplanLockstatusChanged, ShiftplanUpdated, TimeconstraintCreated, TimeconstraintDeleted, TradeRequestCanceled, TradeRequestCompleted, TradeRequestCreated, TradeRequestDeclined, TrustAlertReceived, UsersEventBulkAdd, UsersEventBulkRemove, UsersEventLock, UsersEventUnlock, UsersEventUpdate, UsersPlanBulkAdd, UsersPlanBulkRemove, UsersPlanUpdate, UsersReset, VolunteerNotificationPreferenceUpdated };
 
     public enum AssignmentStatus { Accepted, Auction, AuctionRequestForUnassign, RequestForAssignment };
 
@@ -1510,6 +2190,11 @@ namespace ShiftControl.Events
         public static AssignmentSwitchEvent FromJson(string json) => JsonConvert.DeserializeObject<AssignmentSwitchEvent>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class ClaimedAuctionEvent
+    {
+        public static ClaimedAuctionEvent FromJson(string json) => JsonConvert.DeserializeObject<ClaimedAuctionEvent>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public partial class EventEvent
     {
         public static EventEvent FromJson(string json) => JsonConvert.DeserializeObject<EventEvent>(json, ShiftControl.Events.Converter.Settings);
@@ -1518,6 +2203,11 @@ namespace ShiftControl.Events
     public partial class EventPart
     {
         public static EventPart FromJson(string json) => JsonConvert.DeserializeObject<EventPart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
+    public partial class EventRefPart
+    {
+        public static EventRefPart FromJson(string json) => JsonConvert.DeserializeObject<EventRefPart>(json, ShiftControl.Events.Converter.Settings);
     }
 
     public partial class InvitePart
@@ -1640,6 +2330,11 @@ namespace ShiftControl.Events
         public static ShiftPlanPart FromJson(string json) => JsonConvert.DeserializeObject<ShiftPlanPart>(json, ShiftControl.Events.Converter.Settings);
     }
 
+    public partial class ShiftPlanRefPart
+    {
+        public static ShiftPlanRefPart FromJson(string json) => JsonConvert.DeserializeObject<ShiftPlanRefPart>(json, ShiftControl.Events.Converter.Settings);
+    }
+
     public partial class ShiftPlanVolunteerEvent
     {
         public static ShiftPlanVolunteerEvent FromJson(string json) => JsonConvert.DeserializeObject<ShiftPlanVolunteerEvent>(json, ShiftControl.Events.Converter.Settings);
@@ -1708,8 +2403,10 @@ namespace ShiftControl.Events
         public static string ToJson(this AssignmentPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this AssignmentPartBuilder self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this AssignmentSwitchEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this ClaimedAuctionEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this EventEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this EventPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this EventRefPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this InvitePart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this LeavePlanEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this LocationEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1734,6 +2431,7 @@ namespace ShiftControl.Events
         public static string ToJson(this ShiftPlanEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this ShiftPlanInviteEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this ShiftPlanPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
+        public static string ToJson(this ShiftPlanRefPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this ShiftPlanVolunteerEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TimeConstraintEvent self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
         public static string ToJson(this TimeConstraintPart self) => JsonConvert.SerializeObject(self, ShiftControl.Events.Converter.Settings);
@@ -1756,6 +2454,7 @@ namespace ShiftControl.Events
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
+                EventTypeConverter.Singleton,
                 AssignmentStatusConverter.Singleton,
                 InvitePartTypeConverter.Singleton,
                 ChannelElementConverter.Singleton,
@@ -1768,6 +2467,382 @@ namespace ShiftControl.Events
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
+    }
+
+    internal class EventTypeConverter : JsonConverter
+    {
+        public override bool CanConvert(Type t) => t == typeof(EventType) || t == typeof(EventType?);
+
+        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var value = serializer.Deserialize<string>(reader);
+            switch (value)
+            {
+                case "ACTIVITY_CREATED":
+                    return EventType.ActivityCreated;
+                case "ACTIVITY_DELETED":
+                    return EventType.ActivityDeleted;
+                case "ACTIVITY_UPDATED":
+                    return EventType.ActivityUpdated;
+                case "AUCTION_CANCELED":
+                    return EventType.AuctionCanceled;
+                case "AUCTION_CLAIMED":
+                    return EventType.AuctionClaimed;
+                case "AUCTION_CREATED":
+                    return EventType.AuctionCreated;
+                case "EVENT_CLONED":
+                    return EventType.EventCloned;
+                case "EVENT_CREATED":
+                    return EventType.EventCreated;
+                case "EVENT_DELETED":
+                    return EventType.EventDeleted;
+                case "EVENT_EXPORTED":
+                    return EventType.EventExported;
+                case "EVENT_IMPORTED":
+                    return EventType.EventImported;
+                case "EVENT_UPDATED":
+                    return EventType.EventUpdated;
+                case "LOCATION_CREATED":
+                    return EventType.LocationCreated;
+                case "LOCATION_DELETED":
+                    return EventType.LocationDeleted;
+                case "LOCATION_UPDATED":
+                    return EventType.LocationUpdated;
+                case "POSITIONSLOT_CREATED":
+                    return EventType.PositionslotCreated;
+                case "POSITIONSLOT_DELETED":
+                    return EventType.PositionslotDeleted;
+                case "POSITIONSLOT_JOINED":
+                    return EventType.PositionslotJoined;
+                case "POSITIONSLOT_LEFT":
+                    return EventType.PositionslotLeft;
+                case "POSITIONSLOT_PREFERENCE_UPDATED":
+                    return EventType.PositionslotPreferenceUpdated;
+                case "POSITIONSLOT_REQUEST_JOIN":
+                    return EventType.PositionslotRequestJoin;
+                case "POSITIONSLOT_REQUEST_JOIN_ACCEPTED":
+                    return EventType.PositionslotRequestJoinAccepted;
+                case "POSITIONSLOT_REQUEST_JOIN_DECLINED":
+                    return EventType.PositionslotRequestJoinDeclined;
+                case "POSITIONSLOT_REQUEST_JOIN_WITHDRAW":
+                    return EventType.PositionslotRequestJoinWithdraw;
+                case "POSITIONSLOT_REQUEST_LEAVE":
+                    return EventType.PositionslotRequestLeave;
+                case "POSITIONSLOT_REQUEST_LEAVE_ACCEPTED":
+                    return EventType.PositionslotRequestLeaveAccepted;
+                case "POSITIONSLOT_REQUEST_LEAVE_DECLINED":
+                    return EventType.PositionslotRequestLeaveDeclined;
+                case "POSITIONSLOT_REQUEST_LEAVE_WITHDRAW":
+                    return EventType.PositionslotRequestLeaveWithdraw;
+                case "POSITIONSLOT_UPDATED":
+                    return EventType.PositionslotUpdated;
+                case "PRETALX_API_KEY_INVALID":
+                    return EventType.PretalxApiKeyInvalid;
+                case "REWARDPOINTS_SHARETOKEN_CREATED":
+                    return EventType.RewardpointsSharetokenCreated;
+                case "REWARDPOINTS_SHARETOKEN_DELETED":
+                    return EventType.RewardpointsSharetokenDeleted;
+                case "REWARDPOINTS_TRANSACTION_CREATED":
+                    return EventType.RewardpointsTransactionCreated;
+                case "REWARDPOINTS_TRANSACTION_FAILED":
+                    return EventType.RewardpointsTransactionFailed;
+                case "ROLE_ASSIGNED":
+                    return EventType.RoleAssigned;
+                case "ROLE_CREATED":
+                    return EventType.RoleCreated;
+                case "ROLE_DELETED":
+                    return EventType.RoleDeleted;
+                case "ROLE_UNASSIGNED":
+                    return EventType.RoleUnassigned;
+                case "ROLE_UPDATED":
+                    return EventType.RoleUpdated;
+                case "SHIFTPLAN_CREATED":
+                    return EventType.ShiftplanCreated;
+                case "SHIFTPLAN_DELETED":
+                    return EventType.ShiftplanDeleted;
+                case "SHIFTPLAN_INVITE_CREATED":
+                    return EventType.ShiftplanInviteCreated;
+                case "SHIFTPLAN_INVITE_DELETED":
+                    return EventType.ShiftplanInviteDeleted;
+                case "SHIFTPLAN_INVITE_REVOKED":
+                    return EventType.ShiftplanInviteRevoked;
+                case "SHIFTPLAN_JOINED_PLANNER":
+                    return EventType.ShiftplanJoinedPlanner;
+                case "SHIFTPLAN_JOINED_VOLUNTEER":
+                    return EventType.ShiftplanJoinedVolunteer;
+                case "SHIFTPLAN_LEAVE":
+                    return EventType.ShiftplanLeave;
+                case "SHIFTPLAN_LOCKSTATUS_CHANGED":
+                    return EventType.ShiftplanLockstatusChanged;
+                case "SHIFTPLAN_UPDATED":
+                    return EventType.ShiftplanUpdated;
+                case "SHIFT_CREATED":
+                    return EventType.ShiftCreated;
+                case "SHIFT_DELETED":
+                    return EventType.ShiftDeleted;
+                case "SHIFT_UPDATED":
+                    return EventType.ShiftUpdated;
+                case "TIMECONSTRAINT_CREATED":
+                    return EventType.TimeconstraintCreated;
+                case "TIMECONSTRAINT_DELETED":
+                    return EventType.TimeconstraintDeleted;
+                case "TRADE_REQUEST_CANCELED":
+                    return EventType.TradeRequestCanceled;
+                case "TRADE_REQUEST_COMPLETED":
+                    return EventType.TradeRequestCompleted;
+                case "TRADE_REQUEST_CREATED":
+                    return EventType.TradeRequestCreated;
+                case "TRADE_REQUEST_DECLINED":
+                    return EventType.TradeRequestDeclined;
+                case "TRUST_ALERT_RECEIVED":
+                    return EventType.TrustAlertReceived;
+                case "USERS_EVENT_BULK_ADD":
+                    return EventType.UsersEventBulkAdd;
+                case "USERS_EVENT_BULK_REMOVE":
+                    return EventType.UsersEventBulkRemove;
+                case "USERS_EVENT_LOCK":
+                    return EventType.UsersEventLock;
+                case "USERS_EVENT_UNLOCK":
+                    return EventType.UsersEventUnlock;
+                case "USERS_EVENT_UPDATE":
+                    return EventType.UsersEventUpdate;
+                case "USERS_PLAN_BULK_ADD":
+                    return EventType.UsersPlanBulkAdd;
+                case "USERS_PLAN_BULK_REMOVE":
+                    return EventType.UsersPlanBulkRemove;
+                case "USERS_PLAN_UPDATE":
+                    return EventType.UsersPlanUpdate;
+                case "USERS_RESET":
+                    return EventType.UsersReset;
+                case "VOLUNTEER_NOTIFICATION_PREFERENCE_UPDATED":
+                    return EventType.VolunteerNotificationPreferenceUpdated;
+            }
+            throw new Exception("Cannot unmarshal type EventType");
+        }
+
+        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
+        {
+            if (untypedValue == null)
+            {
+                serializer.Serialize(writer, null);
+                return;
+            }
+            var value = (EventType)untypedValue;
+            switch (value)
+            {
+                case EventType.ActivityCreated:
+                    serializer.Serialize(writer, "ACTIVITY_CREATED");
+                    return;
+                case EventType.ActivityDeleted:
+                    serializer.Serialize(writer, "ACTIVITY_DELETED");
+                    return;
+                case EventType.ActivityUpdated:
+                    serializer.Serialize(writer, "ACTIVITY_UPDATED");
+                    return;
+                case EventType.AuctionCanceled:
+                    serializer.Serialize(writer, "AUCTION_CANCELED");
+                    return;
+                case EventType.AuctionClaimed:
+                    serializer.Serialize(writer, "AUCTION_CLAIMED");
+                    return;
+                case EventType.AuctionCreated:
+                    serializer.Serialize(writer, "AUCTION_CREATED");
+                    return;
+                case EventType.EventCloned:
+                    serializer.Serialize(writer, "EVENT_CLONED");
+                    return;
+                case EventType.EventCreated:
+                    serializer.Serialize(writer, "EVENT_CREATED");
+                    return;
+                case EventType.EventDeleted:
+                    serializer.Serialize(writer, "EVENT_DELETED");
+                    return;
+                case EventType.EventExported:
+                    serializer.Serialize(writer, "EVENT_EXPORTED");
+                    return;
+                case EventType.EventImported:
+                    serializer.Serialize(writer, "EVENT_IMPORTED");
+                    return;
+                case EventType.EventUpdated:
+                    serializer.Serialize(writer, "EVENT_UPDATED");
+                    return;
+                case EventType.LocationCreated:
+                    serializer.Serialize(writer, "LOCATION_CREATED");
+                    return;
+                case EventType.LocationDeleted:
+                    serializer.Serialize(writer, "LOCATION_DELETED");
+                    return;
+                case EventType.LocationUpdated:
+                    serializer.Serialize(writer, "LOCATION_UPDATED");
+                    return;
+                case EventType.PositionslotCreated:
+                    serializer.Serialize(writer, "POSITIONSLOT_CREATED");
+                    return;
+                case EventType.PositionslotDeleted:
+                    serializer.Serialize(writer, "POSITIONSLOT_DELETED");
+                    return;
+                case EventType.PositionslotJoined:
+                    serializer.Serialize(writer, "POSITIONSLOT_JOINED");
+                    return;
+                case EventType.PositionslotLeft:
+                    serializer.Serialize(writer, "POSITIONSLOT_LEFT");
+                    return;
+                case EventType.PositionslotPreferenceUpdated:
+                    serializer.Serialize(writer, "POSITIONSLOT_PREFERENCE_UPDATED");
+                    return;
+                case EventType.PositionslotRequestJoin:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_JOIN");
+                    return;
+                case EventType.PositionslotRequestJoinAccepted:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_JOIN_ACCEPTED");
+                    return;
+                case EventType.PositionslotRequestJoinDeclined:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_JOIN_DECLINED");
+                    return;
+                case EventType.PositionslotRequestJoinWithdraw:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_JOIN_WITHDRAW");
+                    return;
+                case EventType.PositionslotRequestLeave:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_LEAVE");
+                    return;
+                case EventType.PositionslotRequestLeaveAccepted:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_LEAVE_ACCEPTED");
+                    return;
+                case EventType.PositionslotRequestLeaveDeclined:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_LEAVE_DECLINED");
+                    return;
+                case EventType.PositionslotRequestLeaveWithdraw:
+                    serializer.Serialize(writer, "POSITIONSLOT_REQUEST_LEAVE_WITHDRAW");
+                    return;
+                case EventType.PositionslotUpdated:
+                    serializer.Serialize(writer, "POSITIONSLOT_UPDATED");
+                    return;
+                case EventType.PretalxApiKeyInvalid:
+                    serializer.Serialize(writer, "PRETALX_API_KEY_INVALID");
+                    return;
+                case EventType.RewardpointsSharetokenCreated:
+                    serializer.Serialize(writer, "REWARDPOINTS_SHARETOKEN_CREATED");
+                    return;
+                case EventType.RewardpointsSharetokenDeleted:
+                    serializer.Serialize(writer, "REWARDPOINTS_SHARETOKEN_DELETED");
+                    return;
+                case EventType.RewardpointsTransactionCreated:
+                    serializer.Serialize(writer, "REWARDPOINTS_TRANSACTION_CREATED");
+                    return;
+                case EventType.RewardpointsTransactionFailed:
+                    serializer.Serialize(writer, "REWARDPOINTS_TRANSACTION_FAILED");
+                    return;
+                case EventType.RoleAssigned:
+                    serializer.Serialize(writer, "ROLE_ASSIGNED");
+                    return;
+                case EventType.RoleCreated:
+                    serializer.Serialize(writer, "ROLE_CREATED");
+                    return;
+                case EventType.RoleDeleted:
+                    serializer.Serialize(writer, "ROLE_DELETED");
+                    return;
+                case EventType.RoleUnassigned:
+                    serializer.Serialize(writer, "ROLE_UNASSIGNED");
+                    return;
+                case EventType.RoleUpdated:
+                    serializer.Serialize(writer, "ROLE_UPDATED");
+                    return;
+                case EventType.ShiftplanCreated:
+                    serializer.Serialize(writer, "SHIFTPLAN_CREATED");
+                    return;
+                case EventType.ShiftplanDeleted:
+                    serializer.Serialize(writer, "SHIFTPLAN_DELETED");
+                    return;
+                case EventType.ShiftplanInviteCreated:
+                    serializer.Serialize(writer, "SHIFTPLAN_INVITE_CREATED");
+                    return;
+                case EventType.ShiftplanInviteDeleted:
+                    serializer.Serialize(writer, "SHIFTPLAN_INVITE_DELETED");
+                    return;
+                case EventType.ShiftplanInviteRevoked:
+                    serializer.Serialize(writer, "SHIFTPLAN_INVITE_REVOKED");
+                    return;
+                case EventType.ShiftplanJoinedPlanner:
+                    serializer.Serialize(writer, "SHIFTPLAN_JOINED_PLANNER");
+                    return;
+                case EventType.ShiftplanJoinedVolunteer:
+                    serializer.Serialize(writer, "SHIFTPLAN_JOINED_VOLUNTEER");
+                    return;
+                case EventType.ShiftplanLeave:
+                    serializer.Serialize(writer, "SHIFTPLAN_LEAVE");
+                    return;
+                case EventType.ShiftplanLockstatusChanged:
+                    serializer.Serialize(writer, "SHIFTPLAN_LOCKSTATUS_CHANGED");
+                    return;
+                case EventType.ShiftplanUpdated:
+                    serializer.Serialize(writer, "SHIFTPLAN_UPDATED");
+                    return;
+                case EventType.ShiftCreated:
+                    serializer.Serialize(writer, "SHIFT_CREATED");
+                    return;
+                case EventType.ShiftDeleted:
+                    serializer.Serialize(writer, "SHIFT_DELETED");
+                    return;
+                case EventType.ShiftUpdated:
+                    serializer.Serialize(writer, "SHIFT_UPDATED");
+                    return;
+                case EventType.TimeconstraintCreated:
+                    serializer.Serialize(writer, "TIMECONSTRAINT_CREATED");
+                    return;
+                case EventType.TimeconstraintDeleted:
+                    serializer.Serialize(writer, "TIMECONSTRAINT_DELETED");
+                    return;
+                case EventType.TradeRequestCanceled:
+                    serializer.Serialize(writer, "TRADE_REQUEST_CANCELED");
+                    return;
+                case EventType.TradeRequestCompleted:
+                    serializer.Serialize(writer, "TRADE_REQUEST_COMPLETED");
+                    return;
+                case EventType.TradeRequestCreated:
+                    serializer.Serialize(writer, "TRADE_REQUEST_CREATED");
+                    return;
+                case EventType.TradeRequestDeclined:
+                    serializer.Serialize(writer, "TRADE_REQUEST_DECLINED");
+                    return;
+                case EventType.TrustAlertReceived:
+                    serializer.Serialize(writer, "TRUST_ALERT_RECEIVED");
+                    return;
+                case EventType.UsersEventBulkAdd:
+                    serializer.Serialize(writer, "USERS_EVENT_BULK_ADD");
+                    return;
+                case EventType.UsersEventBulkRemove:
+                    serializer.Serialize(writer, "USERS_EVENT_BULK_REMOVE");
+                    return;
+                case EventType.UsersEventLock:
+                    serializer.Serialize(writer, "USERS_EVENT_LOCK");
+                    return;
+                case EventType.UsersEventUnlock:
+                    serializer.Serialize(writer, "USERS_EVENT_UNLOCK");
+                    return;
+                case EventType.UsersEventUpdate:
+                    serializer.Serialize(writer, "USERS_EVENT_UPDATE");
+                    return;
+                case EventType.UsersPlanBulkAdd:
+                    serializer.Serialize(writer, "USERS_PLAN_BULK_ADD");
+                    return;
+                case EventType.UsersPlanBulkRemove:
+                    serializer.Serialize(writer, "USERS_PLAN_BULK_REMOVE");
+                    return;
+                case EventType.UsersPlanUpdate:
+                    serializer.Serialize(writer, "USERS_PLAN_UPDATE");
+                    return;
+                case EventType.UsersReset:
+                    serializer.Serialize(writer, "USERS_RESET");
+                    return;
+                case EventType.VolunteerNotificationPreferenceUpdated:
+                    serializer.Serialize(writer, "VOLUNTEER_NOTIFICATION_PREFERENCE_UPDATED");
+                    return;
+            }
+            throw new Exception("Cannot marshal type EventType");
+        }
+
+        public static readonly EventTypeConverter Singleton = new EventTypeConverter();
     }
 
     internal class AssignmentStatusConverter : JsonConverter
