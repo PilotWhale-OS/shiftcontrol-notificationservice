@@ -51,7 +51,7 @@ class Program
                 .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveNotificationProcessor>("shiftcontrol.positionslot.request.leave.created.#")
                 .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
                 // VOLUNTEER
-                .AddProcessor<AssignmentEvent, AuctionClaimedNotificationProcessor>("shiftcontrol.auction.claimed.#")
+                .AddProcessor<ClaimedAuctionEvent, AuctionClaimedNotificationProcessor>("shiftcontrol.auction.claimed.#")
                 .AddProcessor<UserEventBulkEvent, EventBulkAddNotificationProcessor>("shiftcontrol.users.bulk.add")
                 .AddProcessor<UserEventBulkEvent, EventBulkRemoveNotificationProcessor>("shiftcontrol.users.bulk.remove")
                 .AddProcessor<UserEvent, EventBulkUpdateNotificationProcessor>("shiftcontrol.users.#.update")

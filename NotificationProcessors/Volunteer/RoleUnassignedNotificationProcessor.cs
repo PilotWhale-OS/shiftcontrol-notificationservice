@@ -29,7 +29,7 @@ public class RoleUnassignedNotificationProcessor(
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class RoleUnassignedNotificationProcessor(
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!"
             );    
+    }
+    
+    private string getUrl(RoleVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

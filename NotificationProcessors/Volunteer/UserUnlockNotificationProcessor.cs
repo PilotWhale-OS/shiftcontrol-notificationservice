@@ -29,7 +29,7 @@ public class UserUnlockNotificationProcessor(
             "Unlocked",
             $"Your account has been unlocked!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class UserUnlockNotificationProcessor(
             "Unlocked",
             $"Your account has been unlocked!"
             );    
+    }
+    
+    private string getUrl(UserEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlanRefParts[0].EventRefPart.Id}/volunteer";
     }
 }

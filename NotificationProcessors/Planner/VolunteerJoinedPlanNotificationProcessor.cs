@@ -29,7 +29,7 @@ public class VolunteerJoinedPlanNotificationProcessor(
             "Volunteer Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/plans/{eventData.ShiftPlan.Id}",
+            getUrl(eventData),
             false,
             null
             );
@@ -54,5 +54,10 @@ public class VolunteerJoinedPlanNotificationProcessor(
             "Volunteer Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'."
             );
+    }
+    
+    private string getUrl(ShiftPlanVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlan.EventRefPart.Id}/plans/{eventData.ShiftPlan.Id}";
     }
 }

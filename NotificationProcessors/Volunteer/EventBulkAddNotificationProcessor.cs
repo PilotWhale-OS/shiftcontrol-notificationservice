@@ -33,7 +33,7 @@ public class EventBulkAddNotificationProcessor(
             "Shiftplan Assignment",
             $"You were added to new events!",
             date,
-            $@"/events",
+            getUrl(),
             false,
             null
             );    
@@ -63,5 +63,9 @@ public class EventBulkAddNotificationProcessor(
             $"You were added to new events!"
             );    
     }
-
+    
+    private string getUrl()
+    {
+        return $@"/events";
+    }
 }

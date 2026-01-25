@@ -30,7 +30,7 @@ public class TradeDeclinedNotificationProcessor(
             "Trade Declined",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            getUrl(eventData),
             false,
             null
             );    
@@ -56,5 +56,10 @@ public class TradeDeclinedNotificationProcessor(
             "Trade Declined",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!"
             );    
+    }
+    
+    private string getUrl(TradeEvent eventData)
+    {
+        return $@"/events/{eventData.Trade.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

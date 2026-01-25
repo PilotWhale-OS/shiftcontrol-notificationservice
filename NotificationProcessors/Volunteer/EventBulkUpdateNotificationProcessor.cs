@@ -29,7 +29,7 @@ public class EventBulkUpdateNotificationProcessor(
             "Plans Updated",
             $"The events you participate in have changed!",
             date,
-            $@"/events",
+            getUrl(),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class EventBulkUpdateNotificationProcessor(
             "Plans Updated",
             $"The events you participate in have changed!"
             );    
+    }
+    
+    private string getUrl()
+    {
+        return $@"/events";
     }
 }

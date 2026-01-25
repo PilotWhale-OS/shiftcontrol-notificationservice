@@ -29,7 +29,7 @@ public class RequestJoinDeclinedNotificationProcessor(
             "Join Request Declined",
             $"Your request to join slot '{eventData.PositionSlot.PositionSlotName}' was declined!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            getUrl(eventData),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class RequestJoinDeclinedNotificationProcessor(
             "Join Request Declined",
             $"Your request to join slot '{eventData.PositionSlot.PositionSlotName}' was declined!"
             );    
+    }
+    
+    private string getUrl(PositionSlotVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

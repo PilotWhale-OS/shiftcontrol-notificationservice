@@ -31,7 +31,7 @@ public class TradeCompletedNotificationProcessor(
             "Trade Accepted",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -58,5 +58,10 @@ public class TradeCompletedNotificationProcessor(
             "Trade Accepted",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!"
             );    
+    }
+    
+    private string getUrl(AssignmentSwitchEvent eventData)
+    {
+        return $@"/events/{eventData.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

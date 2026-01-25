@@ -33,7 +33,7 @@ public class PlanBulkRemoveNotificationProcessor(
             "Roles Removed",
             $"Some Roles have been removed from you!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            getUrl(eventData),
             false,
             null
             );    
@@ -63,5 +63,9 @@ public class PlanBulkRemoveNotificationProcessor(
             $"Some Roles have been removed from you!"
             );    
     }
-
+    
+    private string getUrl(UserPlanBulkEvent eventData)
+    {
+        return $@"/events{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
+    }
 }

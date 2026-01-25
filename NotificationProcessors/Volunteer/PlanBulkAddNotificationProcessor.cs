@@ -33,7 +33,7 @@ public class PlanBulkAddNotificationProcessor(
             "New Roles",
             $"You were assigned new roles!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -62,5 +62,10 @@ public class PlanBulkAddNotificationProcessor(
             "New Roles",
             $"You were assigned new roles!"
             );    
+    }
+    
+    private string getUrl(UserPlanBulkEvent eventData)
+    {
+        return $@"/events{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

@@ -29,7 +29,7 @@ public class UserResetNotificationProcessor(
             "Reset",
             $"Your account has been reset!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class UserResetNotificationProcessor(
             "Reset",
             $"Your account has been reset!"
             );    
+    }
+    
+    private string getUrl(UserEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlanRefParts[0].EventRefPart.Id}/volunteer";
     }
 }

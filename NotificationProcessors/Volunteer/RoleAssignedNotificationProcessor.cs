@@ -29,7 +29,7 @@ public class RoleAssignedNotificationProcessor(
             "Role Assigned",
             $"You have been assigned the role '{eventData.Role.Name}'!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID",
+            getUrl(eventData),
             false,
             null
             );    
@@ -54,5 +54,10 @@ public class RoleAssignedNotificationProcessor(
             "Role Assigned",
             $"You have been assigned the role '{eventData.Role.Name}'!"
             );    
+    }
+    
+    private string getUrl(RoleVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

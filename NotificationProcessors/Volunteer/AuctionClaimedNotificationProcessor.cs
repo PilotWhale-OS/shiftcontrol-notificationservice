@@ -8,16 +8,15 @@ namespace NotificationService.Notifications;
 public class AuctionClaimedNotificationProcessor(
     ILogger<AuctionClaimedNotificationProcessor> logger,
     ShiftserviceApiClientService clientService
-) : INotificationProcessor<AssignmentEvent>
+) : INotificationProcessor<ClaimedAuctionEvent>
 {
-    public async Task<PushNotification?> BuildPush(AssignmentEvent eventData)
+    public async Task<PushNotification?> BuildPush(ClaimedAuctionEvent eventData)
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            // TODO add oldAssigned User
-            RelatedVolunteerIds = {}, 
+            RelatedVolunteerIds = {eventData.OldVolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -29,30 +28,34 @@ public class AuctionClaimedNotificationProcessor(
             "Auction Claimed",
             $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            getUrl(eventData),
             false,
             null
-            );    
+            );
     }
 
-    public async Task<EmailNotification?> BuildEmail(AssignmentEvent eventData)
+    public async Task<EmailNotification?> BuildEmail(ClaimedAuctionEvent eventData)
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            // TODO add oldAssigned User
-            RelatedVolunteerIds = {}, 
+            RelatedVolunteerIds = {eventData.OldVolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
-        return new PushNotification(
+        return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Auction Claimed",
             $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!"
-            );    
+            );
+    }
+    
+    private string getUrl(ClaimedAuctionEvent eventData)
+    {
+        return $@"/events/{eventData.Assignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

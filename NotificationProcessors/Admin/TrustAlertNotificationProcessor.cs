@@ -29,7 +29,7 @@ public class TrustAlertNotificationProcessor(
             "Trust Alert",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed.",
             date,
-            $@"TODO_INSERT_TRUST_ALERT_URL",
+            getUrl(eventData),
             false,
             null
             );
@@ -54,5 +54,10 @@ public class TrustAlertNotificationProcessor(
             "Trust Alert",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed."
             );
+    }
+
+    private string getUrl(TrustAlertEvent eventData)
+    {
+        return $@"TODO_INSERT_TRUST_ALERT_URL";
     }
 }

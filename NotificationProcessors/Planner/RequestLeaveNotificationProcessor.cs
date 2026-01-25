@@ -16,8 +16,7 @@ public class RequestLeaveNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_REQUEST,
-            // TODO add shiftplanid
-            RelatedShiftPlanId = null,
+            RelatedShiftPlanId = eventData.PositionSlot.ShiftPlanRefPart.Id.ToString(),
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER
         });
         if (recipients.Count == 0) return null;
@@ -31,7 +30,7 @@ public class RequestLeaveNotificationProcessor(
             "Leave Request",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/plans?planId=TODO_INSERT_PLAN_ID&mode=assignments&status=AUCTION_REQUEST_FOR_UNASSIGN",
+            getUrl(eventData),
             false,
             null
             );    
@@ -43,8 +42,7 @@ public class RequestLeaveNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_REQUEST,
-            // TODO add shiftplanid
-            RelatedShiftPlanId = null,
+            RelatedShiftPlanId = eventData.PositionSlot.ShiftPlanRefPart.Id.ToString(),
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER
         });
         if (recipients.Count == 0) return null;
@@ -58,5 +56,10 @@ public class RequestLeaveNotificationProcessor(
             "Leave Request",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!"
             );    
+    }
+    
+    private string getUrl(PositionSlotVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/plans?planId={eventData.PositionSlot.ShiftPlanRefPart.Id}&mode=assignments&status=AUCTION_REQUEST_FOR_UNASSIGN";
     }
 }

@@ -30,7 +30,7 @@ public class TradeCreatedNotificationProcessor(
             "Trade Requested",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} offers you '{eventData.Trade.OfferingAssignment.PositionSlot.PositionSlotName}' for '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/volunteer",
+            getUrl(eventData),
             false,
             null
             );    
@@ -56,6 +56,11 @@ public class TradeCreatedNotificationProcessor(
             "Trade Requested",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} offers you '{eventData.Trade.OfferingAssignment.PositionSlot.PositionSlotName}' for '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!"
             );    
+    }
+    
+    private string getUrl(TradeEvent eventData)
+    {
+        return $@"/events/{eventData.Trade.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 
 }

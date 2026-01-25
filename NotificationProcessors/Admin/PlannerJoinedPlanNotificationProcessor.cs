@@ -30,7 +30,7 @@ public class PlannerJoinedPlanNotificationProcessor(
             "Planner Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            $@"/events/TODO_INSERT_EVENT_ID/plans/{eventData.ShiftPlan.Id}",
+            getUrl(eventData),
             false,
             null
             );
@@ -48,13 +48,17 @@ public class PlannerJoinedPlanNotificationProcessor(
         if (recipients.Count == 0) return null;
 
         var joinedVolunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
-        var relatedPlan = await (await clientService.GetClient()).GetShiftDetailsAsync(eventData.ShiftPlan.Id);
 
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             $"{eventData.ShiftPlan.Name}: New Planner Joined",
-            $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}' in the event '{relatedPlan.Event.Name}'." +
-            $"You can manage the shift plan here: https://frontend.shiftcontrol.tobeh.host/plans/{eventData.ShiftPlan.Id}"
+            $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}' in the event '{eventData.ShiftPlan.EventRefPart.Name}'." +
+            $"You can manage the shift plan here: https://frontend.shiftcontrol.tobeh.host{getUrl(eventData)}"
         );
+    }
+
+    private string getUrl(ShiftPlanVolunteerEvent eventData)
+    {
+        return $@"/events/{eventData.ShiftPlan.EventRefPart.Id}/plans/{eventData.ShiftPlan.Id}";
     }
 }
