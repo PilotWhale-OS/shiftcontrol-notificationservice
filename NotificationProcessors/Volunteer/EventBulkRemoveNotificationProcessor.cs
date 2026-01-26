@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class EventBulkRemoveNotificationProcessor(
     ILogger<EventBulkRemoveNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<UserEventBulkEvent>
 {
     public async Task<PushNotification?> BuildPush(UserEventBulkEvent eventData)
@@ -15,16 +16,15 @@ public class EventBulkRemoveNotificationProcessor(
         var volunteerIds = eventData.Volunteers
             .Select(v => v.Id)
             .ToList();
-        
+
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
-            RelatedVolunteerIds = volunteerIds, 
+            RelatedVolunteerIds = volunteerIds,
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
@@ -33,8 +33,8 @@ public class EventBulkRemoveNotificationProcessor(
             "Shiftplan Unassignments",
             $"You were unassigned from events!",
             date,
-            getUrl()
-            );    
+            appLinkService.BuildEventsPageUrl()
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(UserEventBulkEvent eventData)
@@ -42,28 +42,20 @@ public class EventBulkRemoveNotificationProcessor(
         var volunteerIds = eventData.Volunteers
             .Select(v => v.Id)
             .ToList();
-        
+
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
-            RelatedVolunteerIds = volunteerIds, 
+            RelatedVolunteerIds = volunteerIds,
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Shiftplan Unassignments",
             $"You were unassigned from events!"
-            );    
-    }
-    
-    private string getUrl()
-    {
-        return $@"/events";
+            );
     }
 }

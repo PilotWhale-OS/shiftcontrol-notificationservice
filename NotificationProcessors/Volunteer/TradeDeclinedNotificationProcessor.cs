@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class TradeDeclinedNotificationProcessor(
     ILogger<TradeDeclinedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<TradeEvent>
 {
     public async Task<PushNotification?> BuildPush(TradeEvent eventData)
@@ -16,7 +17,7 @@ public class TradeDeclinedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -30,8 +31,8 @@ public class TradeDeclinedNotificationProcessor(
             "Trade Declined",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.Trade.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(TradeEvent eventData)
@@ -40,24 +41,17 @@ public class TradeDeclinedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
 
         var volunteer = await clientService.GetRecipientInfoAsync(eventData.Trade.RequestedAssignment.VolunteerId);
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Trade Declined",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} declined your trade request for slot '{eventData.Trade.RequestedAssignment.PositionSlot.PositionSlotName}'!"
-            );    
-    }
-    
-    private string getUrl(TradeEvent eventData)
-    {
-        return $@"/events/{eventData.Trade.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
+            );
     }
 }

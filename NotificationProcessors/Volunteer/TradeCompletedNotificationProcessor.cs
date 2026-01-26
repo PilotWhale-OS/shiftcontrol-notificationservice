@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class TradeCompletedNotificationProcessor(
     ILogger<TradeCompletedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<AssignmentSwitchEvent>
 {
     public async Task<PushNotification?> BuildPush(AssignmentSwitchEvent eventData)
@@ -17,7 +18,7 @@ public class TradeCompletedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -31,8 +32,8 @@ public class TradeCompletedNotificationProcessor(
             "Trade Accepted",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(AssignmentSwitchEvent eventData)
@@ -42,24 +43,17 @@ public class TradeCompletedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
 
         var volunteer = await clientService.GetRecipientInfoAsync(eventData.RequestedAssignment.VolunteerId);
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Trade Accepted",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!"
-            );    
-    }
-    
-    private string getUrl(AssignmentSwitchEvent eventData)
-    {
-        return $@"/events/{eventData.OfferingAssignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
+            );
     }
 }

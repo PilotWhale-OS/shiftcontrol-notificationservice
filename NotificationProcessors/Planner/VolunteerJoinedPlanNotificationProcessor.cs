@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Planner;
 
 public class VolunteerJoinedPlanNotificationProcessor(
     ILogger<VolunteerJoinedPlanNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<ShiftPlanVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(ShiftPlanVolunteerEvent eventData)
@@ -29,8 +30,10 @@ public class VolunteerJoinedPlanNotificationProcessor(
             "Volunteer Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            getUrl(eventData)
-            );
+            appLinkService.BuildPlanVolunteersPageUrl(
+                eventData.ShiftPlan.EventRefPart.Id.ToString(),
+                eventData.ShiftPlan.Id
+            ));
     }
 
     public async Task<EmailNotification?> BuildEmail(ShiftPlanVolunteerEvent eventData)
@@ -45,17 +48,10 @@ public class VolunteerJoinedPlanNotificationProcessor(
 
         var joinedVolunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Volunteer Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'."
             );
-    }
-    
-    private string getUrl(ShiftPlanVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlan.EventRefPart.Id}/plans/{eventData.ShiftPlan.Id}";
     }
 }

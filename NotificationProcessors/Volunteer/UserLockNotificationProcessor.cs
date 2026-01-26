@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class UserLockNotificationProcessor(
     ILogger<UserLockNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<UserEvent>
 {
     public async Task<PushNotification?> BuildPush(UserEvent eventData)
@@ -16,21 +17,20 @@ public class UserLockNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new PushNotification(
             recipients.Select(rec => rec.Volunteer.Id).ToList(),
-            "Locked",
-            $"Your account has been locked!",
+            "Account Locked",
+            $"Your account has been locked!\nYou can no longer sign up to any shifts.",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.ShiftPlanRefParts.ElementAtOrDefault(0)?.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(UserEvent eventData)
@@ -39,23 +39,15 @@ public class UserLockNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
 
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
-            "Locked",
-            $"Your account has been locked!"
-            );    
-    }
-    
-    private string getUrl(UserEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlanRefParts[0].EventRefPart.Id}/volunteer";
+            "Account Locked",
+            $"Your account has been locked!\nYou can no longer sign up to any shifts."
+            );
     }
 }

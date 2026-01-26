@@ -4,7 +4,9 @@
 using NotificationService.Classes;
 using NotificationService.Database;
 using NotificationService.Hubs.Implementation;
-using NotificationService.Notifications;
+using NotificationService.NotificationProcessors.Admin;
+using NotificationService.NotificationProcessors.Planner;
+using NotificationService.NotificationProcessors.Volunteer;
 using NotificationService.Service;
 using NotificationService.Settings;
 using ShiftControl.Events;
@@ -40,6 +42,7 @@ class Program
             .Configure<DbSettings>(builder.Configuration.GetSection("Db"))
             .Configure<KeycloakSettings>(builder.Configuration.GetSection("Keycloak"))
             .Configure<ShiftserviceSettings>(builder.Configuration.GetSection("Shiftservice"))
+            .Configure<FrontendSettings>(builder.Configuration.GetSection("Frontend"))
             .Configure<EmailSettings>(builder.Configuration.GetSection("Email"))
             .AddDbContext<NotificationServiceDbContext>()
             .AddNotificationProcessors(pb => pb
@@ -73,6 +76,7 @@ class Program
                 .Build()
             )
             .AddSingleton<KeycloakService>()
+            .AddSingleton<AppLinkService>()
             .AddScoped<PushNotificationService>()
             .AddScoped<EventProcessorService>()
             .AddScoped<ShiftserviceApiClientService>()

@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Admin;
 
 public class TrustAlertNotificationProcessor(
     ILogger<TrustAlertNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<TrustAlertEvent>
 {
     public async Task<PushNotification?> BuildPush(TrustAlertEvent eventData)
@@ -29,7 +30,7 @@ public class TrustAlertNotificationProcessor(
             "Trust Alert",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed.",
             date,
-            getUrl(eventData)
+            appLinkService.BuildTrustAlertPageUrl()
             );
     }
 
@@ -45,17 +46,10 @@ public class TrustAlertNotificationProcessor(
 
         var volunteer = await clientService.GetRecipientInfoAsync(eventData.TrustAlertPart.VolunteerId);
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Trust Alert",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed."
             );
-    }
-
-    private string getUrl(TrustAlertEvent eventData)
-    {
-        return $@"TODO_INSERT_TRUST_ALERT_URL";
     }
 }

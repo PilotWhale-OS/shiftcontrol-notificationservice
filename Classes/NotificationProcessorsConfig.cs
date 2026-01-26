@@ -29,7 +29,7 @@ public class NotificationProcessorsConfig(
     IReadOnlyDictionary<string, List<NotificationProcessorsConfig.EventProcessorMapping>> eventNotificationProcessorsMap
 )
 {
-    public record struct EventProcessorMapping(string RoutingKeyPattern, Type EventType, Type ProcessorType);
+    public record EventProcessorMapping(string RoutingKeyPattern, Type EventType, Type ProcessorType);
 
     public ICollection<EventProcessorMapping>? GetEventProcessors(string routingKey)
     {

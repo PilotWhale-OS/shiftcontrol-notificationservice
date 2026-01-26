@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Planner;
 
 public class RequestLeaveNotificationProcessor(
     ILogger<RequestLeaveNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<PositionSlotVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(PositionSlotVolunteerEvent eventData)
@@ -30,8 +31,10 @@ public class RequestLeaveNotificationProcessor(
             "Leave Request",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildPlanAssignmentRequestsPageUrl(
+                eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString(),
+                eventData.PositionSlot.PositionSlotId.ToString()
+            ));
     }
 
     public async Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
@@ -47,17 +50,10 @@ public class RequestLeaveNotificationProcessor(
 
         var volunteer = await clientService.GetRecipientInfoAsync(eventData.VolunteerId);
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Leave Request",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!"
-            );    
-    }
-    
-    private string getUrl(PositionSlotVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/plans?planId={eventData.PositionSlot.ShiftPlanRefPart.Id}&mode=assignments&status=AUCTION_REQUEST_FOR_UNASSIGN";
+            );
     }
 }

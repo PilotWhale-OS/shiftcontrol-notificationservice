@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class AuctionClaimedNotificationProcessor(
     ILogger<AuctionClaimedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<ClaimedAuctionEvent>
 {
     public async Task<PushNotification?> BuildPush(ClaimedAuctionEvent eventData)
@@ -28,7 +29,7 @@ public class AuctionClaimedNotificationProcessor(
             "Auction Claimed",
             $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!",
             date,
-            getUrl(eventData)
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.Assignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString())
             );
     }
 
@@ -43,17 +44,10 @@ public class AuctionClaimedNotificationProcessor(
         });
         if (recipients.Count == 0) return null;
 
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Auction Claimed",
             $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!"
             );
-    }
-    
-    private string getUrl(ClaimedAuctionEvent eventData)
-    {
-        return $@"/events/{eventData.Assignment.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

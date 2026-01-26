@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class EventBulkUpdateNotificationProcessor(
     ILogger<EventBulkUpdateNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<UserEvent>
 {
     public async Task<PushNotification?> BuildPush(UserEvent eventData)
@@ -16,11 +17,10 @@ public class EventBulkUpdateNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
@@ -29,8 +29,8 @@ public class EventBulkUpdateNotificationProcessor(
             "Plans Updated",
             $"The events you participate in have changed!",
             date,
-            getUrl()
-            );    
+            appLinkService.BuildEventsPageUrl()
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(UserEvent eventData)
@@ -39,23 +39,15 @@ public class EventBulkUpdateNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Plans Updated",
             $"The events you participate in have changed!"
-            );    
-    }
-    
-    private string getUrl()
-    {
-        return $@"/events";
+            );
     }
 }

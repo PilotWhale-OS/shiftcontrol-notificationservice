@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class PlanBulkUpdateNotificationProcessor(
     ILogger<PlanBulkUpdateNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<UserEvent>
 {
     public async Task<PushNotification?> BuildPush(UserEvent eventData)
@@ -21,7 +22,6 @@ public class PlanBulkUpdateNotificationProcessor(
         });
         if (recipients.Count == 0) return null;
 
-
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new PushNotification(
@@ -29,7 +29,7 @@ public class PlanBulkUpdateNotificationProcessor(
             "Roles Updated",
             $"Your assigned roles have changed!",
             date,
-            getUrl(eventData)
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.ShiftPlanRefParts.ElementAtOrDefault(0)?.EventRefPart.Id.ToString())
             );
     }
 
@@ -44,9 +44,6 @@ public class PlanBulkUpdateNotificationProcessor(
         });
         if (recipients.Count == 0) return null;
 
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Roles Updated",
@@ -54,9 +51,4 @@ public class PlanBulkUpdateNotificationProcessor(
             );
     }
 
-    private string getUrl(UserEvent eventData)
-    {
-        // this event always includes exactly one plan
-        return $@"/events/{eventData.ShiftPlanRefParts[0].EventRefPart.Id}/volunteer";
-    }
 }

@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class RoleAssignedNotificationProcessor(
     ILogger<RoleAssignedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<RoleVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(RoleVolunteerEvent eventData)
@@ -16,11 +17,10 @@ public class RoleAssignedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
@@ -29,8 +29,8 @@ public class RoleAssignedNotificationProcessor(
             "Role Assigned",
             $"You have been assigned the role '{eventData.Role.Name}'!",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.ShiftPlanRefPart.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(RoleVolunteerEvent eventData)
@@ -39,23 +39,15 @@ public class RoleAssignedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Role Assigned",
             $"You have been assigned the role '{eventData.Role.Name}'!"
-            );    
-    }
-    
-    private string getUrl(RoleVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
+            );
     }
 }

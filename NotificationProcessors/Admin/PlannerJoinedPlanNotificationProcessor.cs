@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Admin;
 
 public class PlannerJoinedPlanNotificationProcessor(
     ILogger<PlannerJoinedPlanNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<ShiftPlanVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(ShiftPlanVolunteerEvent eventData)
@@ -30,7 +31,7 @@ public class PlannerJoinedPlanNotificationProcessor(
             "Planner Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            getUrl(eventData)
+            appLinkService.BuildVolunteerPlansPageUrl(joinedVolunteer.Volunteer.Id)
             );
     }
 
@@ -51,12 +52,7 @@ public class PlannerJoinedPlanNotificationProcessor(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             $"{eventData.ShiftPlan.Name}: New Planner Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}' in the event '{eventData.ShiftPlan.EventRefPart.Name}'." +
-            $"You can manage the shift plan here: https://frontend.shiftcontrol.tobeh.host{getUrl(eventData)}"
+            $"You can manage the volunteer access here: {appLinkService.BuildVolunteerPlansPageUrl(joinedVolunteer.Volunteer.Id)}"
         );
-    }
-
-    private string getUrl(ShiftPlanVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlan.EventRefPart.Id}/plans/{eventData.ShiftPlan.Id}";
     }
 }

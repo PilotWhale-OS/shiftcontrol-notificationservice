@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class RoleUnassignedNotificationProcessor(
     ILogger<RoleUnassignedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<RoleVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(RoleVolunteerEvent eventData)
@@ -29,7 +30,7 @@ public class RoleUnassignedNotificationProcessor(
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!",
             date,
-            getUrl(eventData)
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.ShiftPlanRefPart.EventRefPart.Id.ToString())
             );
     }
 
@@ -44,18 +45,10 @@ public class RoleUnassignedNotificationProcessor(
         });
         if (recipients.Count == 0) return null;
 
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!"
             );
-    }
-
-    private string getUrl(RoleVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
     }
 }

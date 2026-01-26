@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class RequestLeaveAcceptedNotificationProcessor(
     ILogger<RequestLeaveAcceptedNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<PositionSlotVolunteerEvent>
 {
     public async Task<PushNotification?> BuildPush(PositionSlotVolunteerEvent eventData)
@@ -16,11 +17,10 @@ public class RequestLeaveAcceptedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_REQUEST_HANDLED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
 
         var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
@@ -29,8 +29,8 @@ public class RequestLeaveAcceptedNotificationProcessor(
             "Leave Request Accepted",
             $"Your request to leave slot '{eventData.PositionSlot.PositionSlotName}' was accepted!",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(PositionSlotVolunteerEvent eventData)
@@ -39,23 +39,15 @@ public class RequestLeaveAcceptedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_REQUEST_HANDLED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
-
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
 
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Leave Request Accepted",
             $"Your request to leave slot '{eventData.PositionSlot.PositionSlotName}' was accepted!"
-            );    
-    }
-    
-    private string getUrl(PositionSlotVolunteerEvent eventData)
-    {
-        return $@"/events/{eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
+            );
     }
 }

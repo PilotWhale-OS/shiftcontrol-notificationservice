@@ -3,11 +3,12 @@ using NotificationService.Service;
 using NotificationService.ShiftserviceClient;
 using ShiftControl.Events;
 
-namespace NotificationService.Notifications;
+namespace NotificationService.NotificationProcessors.Volunteer;
 
 public class UserResetNotificationProcessor(
     ILogger<UserResetNotificationProcessor> logger,
-    ShiftserviceApiClientService clientService
+    ShiftserviceApiClientService clientService,
+    AppLinkService appLinkService
 ) : INotificationProcessor<UserEvent>
 {
     public async Task<PushNotification?> BuildPush(UserEvent eventData)
@@ -16,7 +17,7 @@ public class UserResetNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -26,11 +27,11 @@ public class UserResetNotificationProcessor(
 
         return new PushNotification(
             recipients.Select(rec => rec.Volunteer.Id).ToList(),
-            "Reset",
-            $"Your account has been reset!",
+            "Account Reset",
+            $"Your account has been reset!\nAll of your assignments have been removed.",
             date,
-            getUrl(eventData)
-            );    
+            appLinkService.BuildVolunteerDashboardPageUrl(eventData.ShiftPlanRefParts.ElementAtOrDefault(0)?.EventRefPart.Id.ToString())
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(UserEvent eventData)
@@ -39,23 +40,15 @@ public class UserResetNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
 
-
-        var date = DateTime.SpecifyKind(eventData.Timestamp?.DateTime ?? DateTime.UtcNow, DateTimeKind.Utc);
-
         return new EmailNotification(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
-            "Reset",
-            $"Your account has been reset!"
-            );    
-    }
-    
-    private string getUrl(UserEvent eventData)
-    {
-        return $@"/events/{eventData.ShiftPlanRefParts[0].EventRefPart.Id}/volunteer";
+            "Account Reset",
+            $"Your account has been reset!\nAll of your assignments have been removed."
+            );
     }
 }
