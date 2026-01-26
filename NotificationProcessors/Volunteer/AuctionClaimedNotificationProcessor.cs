@@ -28,9 +28,7 @@ public class AuctionClaimedNotificationProcessor(
             "Auction Claimed",
             $"Your auction for slot '{eventData.Assignment.PositionSlot.PositionSlotName}' has been claimed!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );
     }
 

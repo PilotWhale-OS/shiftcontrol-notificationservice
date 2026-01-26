@@ -29,9 +29,7 @@ public class UserResetNotificationProcessor(
             "Reset",
             $"Your account has been reset!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

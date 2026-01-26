@@ -29,9 +29,7 @@ public class RoleUnassignedNotificationProcessor(
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );
     }
 

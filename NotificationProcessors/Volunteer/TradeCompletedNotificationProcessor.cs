@@ -31,9 +31,7 @@ public class TradeCompletedNotificationProcessor(
             "Trade Accepted",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} accepted your trade for slot '{eventData.RequestedAssignment.PositionSlot.PositionSlotName}'!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

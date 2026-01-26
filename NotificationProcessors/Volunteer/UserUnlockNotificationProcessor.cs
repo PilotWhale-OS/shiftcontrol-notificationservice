@@ -29,9 +29,7 @@ public class UserUnlockNotificationProcessor(
             "Unlocked",
             $"Your account has been unlocked!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

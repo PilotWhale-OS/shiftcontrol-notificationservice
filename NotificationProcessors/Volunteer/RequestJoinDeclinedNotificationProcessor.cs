@@ -29,9 +29,7 @@ public class RequestJoinDeclinedNotificationProcessor(
             "Join Request Declined",
             $"Your request to join slot '{eventData.PositionSlot.PositionSlotName}' was declined!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

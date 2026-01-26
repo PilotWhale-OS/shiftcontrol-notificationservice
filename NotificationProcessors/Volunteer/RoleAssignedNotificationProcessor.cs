@@ -29,9 +29,7 @@ public class RoleAssignedNotificationProcessor(
             "Role Assigned",
             $"You have been assigned the role '{eventData.Role.Name}'!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

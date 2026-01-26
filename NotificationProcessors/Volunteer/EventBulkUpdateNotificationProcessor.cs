@@ -29,9 +29,7 @@ public class EventBulkUpdateNotificationProcessor(
             "Plans Updated",
             $"The events you participate in have changed!",
             date,
-            getUrl(),
-            false,
-            null
+            getUrl()
             );    
     }
 

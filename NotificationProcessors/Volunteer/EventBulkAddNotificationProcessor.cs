@@ -33,9 +33,7 @@ public class EventBulkAddNotificationProcessor(
             "Shiftplan Assignment",
             $"You were added to new events!",
             date,
-            getUrl(),
-            false,
-            null
+            getUrl()
             );    
     }
 

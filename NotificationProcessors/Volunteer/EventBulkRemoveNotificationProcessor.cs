@@ -33,9 +33,7 @@ public class EventBulkRemoveNotificationProcessor(
             "Shiftplan Unassignments",
             $"You were unassigned from events!",
             date,
-            getUrl(),
-            false,
-            null
+            getUrl()
             );    
     }
 

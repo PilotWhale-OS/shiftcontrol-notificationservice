@@ -29,9 +29,7 @@ public class UserLockNotificationProcessor(
             "Locked",
             $"Your account has been locked!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

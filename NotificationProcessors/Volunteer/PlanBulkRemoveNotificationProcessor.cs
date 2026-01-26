@@ -33,9 +33,7 @@ public class PlanBulkRemoveNotificationProcessor(
             "Roles Removed",
             $"Some Roles have been removed from you!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

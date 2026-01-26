@@ -29,9 +29,7 @@ public class PlanBulkUpdateNotificationProcessor(
             "Roles Updated",
             $"Your assigned roles have changed!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );
     }
 

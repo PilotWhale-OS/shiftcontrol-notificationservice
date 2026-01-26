@@ -30,9 +30,7 @@ public class PlannerJoinedPlanNotificationProcessor(
             "Planner Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}'.",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );
     }
 

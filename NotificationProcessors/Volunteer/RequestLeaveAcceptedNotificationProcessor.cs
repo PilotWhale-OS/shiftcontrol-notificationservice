@@ -29,9 +29,7 @@ public class RequestLeaveAcceptedNotificationProcessor(
             "Leave Request Accepted",
             $"Your request to leave slot '{eventData.PositionSlot.PositionSlotName}' was accepted!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

@@ -29,9 +29,7 @@ public class RequestJoinAcceptedNotificationProcessor(
             "Join Request Accepted",
             $"Your request to join slot '{eventData.PositionSlot.PositionSlotName}' was accepted!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

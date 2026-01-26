@@ -29,9 +29,7 @@ public class TrustAlertNotificationProcessor(
             "Trust Alert",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName}'s behavior should be reviewed.",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );
     }
 

@@ -33,9 +33,7 @@ public class PlanBulkAddNotificationProcessor(
             "New Roles",
             $"You were assigned new roles!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 

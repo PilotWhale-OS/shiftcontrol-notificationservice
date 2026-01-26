@@ -29,9 +29,7 @@ public class RequestLeaveDeclinedNotificationProcessor(
             "Leave Request Declined",
             $"Your request to leave slot '{eventData.PositionSlot.PositionSlotName}' was declined!",
             date,
-            getUrl(eventData),
-            false,
-            null
+            getUrl(eventData)
             );    
     }
 
