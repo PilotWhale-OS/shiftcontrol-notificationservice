@@ -17,7 +17,7 @@ public class TradeCompletedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = [eventData.OfferingAssignment.VolunteerId], 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -42,7 +42,7 @@ public class TradeCompletedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
+            RelatedVolunteerIds = [eventData.OfferingAssignment.VolunteerId], 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;

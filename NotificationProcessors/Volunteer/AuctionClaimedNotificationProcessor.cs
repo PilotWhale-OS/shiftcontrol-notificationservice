@@ -16,7 +16,7 @@ public class AuctionClaimedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OldVolunteerId},
+            RelatedVolunteerIds = [eventData.OldVolunteerId],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -38,7 +38,7 @@ public class AuctionClaimedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.OldVolunteerId},
+            RelatedVolunteerIds = [eventData.OldVolunteerId],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
