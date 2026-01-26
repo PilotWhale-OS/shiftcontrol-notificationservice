@@ -39,7 +39,7 @@ public class EventBulkUpdateNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_PLANS_CHANGED,
             RelatedVolunteerIds = {eventData.Volunteer.Id}, 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER

@@ -39,7 +39,7 @@ public class RoleAssignedNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
             RelatedVolunteerIds = {eventData.VolunteerId}, 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER

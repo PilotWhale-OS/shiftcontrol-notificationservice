@@ -40,7 +40,7 @@ public class RequestLeaveNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_REQUEST,
             RelatedShiftPlanId = eventData.PositionSlot.ShiftPlanRefPart.Id.ToString(),
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER

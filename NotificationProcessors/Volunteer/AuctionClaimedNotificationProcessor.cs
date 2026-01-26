@@ -38,7 +38,7 @@ public class AuctionClaimedNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
             RelatedVolunteerIds = {eventData.OldVolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER

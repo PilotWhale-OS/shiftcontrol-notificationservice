@@ -39,7 +39,7 @@ public class VolunteerJoinedPlanNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.PLANNER_VOLUNTEER_JOINED_PLAN,
             RelatedShiftPlanId = eventData.ShiftPlan.Id,
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.PLANNER

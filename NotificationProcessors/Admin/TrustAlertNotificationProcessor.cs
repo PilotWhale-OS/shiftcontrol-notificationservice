@@ -39,7 +39,7 @@ public class TrustAlertNotificationProcessor(
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.ADMIN_TRUST_ALERT_RECEIVED,
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.ADMIN
         });

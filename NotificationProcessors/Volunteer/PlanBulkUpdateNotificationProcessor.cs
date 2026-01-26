@@ -16,7 +16,7 @@ public class PlanBulkUpdateNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -32,16 +32,16 @@ public class PlanBulkUpdateNotificationProcessor(
             getUrl(eventData),
             false,
             null
-            );    
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(UserEvent eventData)
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id}, 
+            RelatedVolunteerIds = {eventData.Volunteer.Id},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -53,9 +53,9 @@ public class PlanBulkUpdateNotificationProcessor(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Roles Updated",
             $"Your assigned roles have changed!"
-            );    
+            );
     }
-    
+
     private string getUrl(UserEvent eventData)
     {
         // this event always includes exactly one plan

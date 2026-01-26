@@ -42,7 +42,7 @@ public class TradeCompletedNotificationProcessor(
         // eventData includes the trade BEFORE it was accepted
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
             RelatedVolunteerIds = {eventData.OfferingAssignment.VolunteerId}, 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER

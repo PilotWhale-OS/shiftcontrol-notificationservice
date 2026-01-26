@@ -16,7 +16,7 @@ public class RoleUnassignedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -32,16 +32,16 @@ public class RoleUnassignedNotificationProcessor(
             getUrl(eventData),
             false,
             null
-            );    
+            );
     }
 
     public async Task<EmailNotification?> BuildEmail(RoleVolunteerEvent eventData)
     {
         var recipients = await clientService.GetRecipientsForNotificationAsync(new()
         {
-            NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
+            NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId}, 
+            RelatedVolunteerIds = {eventData.VolunteerId},
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -53,9 +53,9 @@ public class RoleUnassignedNotificationProcessor(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             "Role Unassignment",
             $"The role '{eventData.Role.Name}' has been unassigned from you!"
-            );    
+            );
     }
-    
+
     private string getUrl(RoleVolunteerEvent eventData)
     {
         return $@"/events/{eventData.ShiftPlanRefPart.EventRefPart.Id}/volunteer";
