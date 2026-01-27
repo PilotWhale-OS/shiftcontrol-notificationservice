@@ -17,7 +17,7 @@ public class TradeDeclinedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId},
+            RelatedVolunteerIds = [eventData.Trade.RequestedAssignment.VolunteerId],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -41,7 +41,7 @@ public class TradeDeclinedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_TRADE_OR_AUCTION,
-            RelatedVolunteerIds = {eventData.Trade.OfferingAssignment.VolunteerId},
+            RelatedVolunteerIds = [eventData.Trade.RequestedAssignment.VolunteerId],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;

@@ -17,7 +17,7 @@ public class UserUnlockNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id},
+            RelatedVolunteerIds = [eventData.Volunteer.Id],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -39,7 +39,7 @@ public class UserUnlockNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_STATUS_CHANGED,
-            RelatedVolunteerIds = {eventData.Volunteer.Id},
+            RelatedVolunteerIds = [eventData.Volunteer.Id],
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;

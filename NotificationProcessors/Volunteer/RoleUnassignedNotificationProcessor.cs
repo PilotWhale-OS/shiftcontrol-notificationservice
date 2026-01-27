@@ -17,7 +17,7 @@ public class RoleUnassignedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.PUSH,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId},
+            RelatedVolunteerIds = [eventData.VolunteerId], 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
@@ -40,7 +40,7 @@ public class RoleUnassignedNotificationProcessor(
         {
             NotificationChannel = RecipientsFilterDtoNotificationChannel.EMAIL,
             NotificationType = RecipientsFilterDtoNotificationType.VOLUNTEER_ROLES_CHANGED,
-            RelatedVolunteerIds = {eventData.VolunteerId},
+            RelatedVolunteerIds = [eventData.VolunteerId], 
             ReceiverAccessLevel = RecipientsFilterDtoReceiverAccessLevel.VOLUNTEER
         });
         if (recipients.Count == 0) return null;
