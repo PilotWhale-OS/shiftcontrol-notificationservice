@@ -34,7 +34,7 @@ public class AppLinkService(ILogger<AppLinkService> logger, IOptions<FrontendSet
         return $"{(mode == LinkMode.Absolute ? BaseUrl : "")}/volunteers/{volunteerId}";
     }
 
-    public string BuildTrustAlertPageUrl(LinkMode mode = LinkMode.Absolute)
+    public string BuildTrustAlertPageUrl(LinkMode mode = LinkMode.Relative)
     {
         return $"{(mode == LinkMode.Absolute ? BaseUrl : "")}/trust";
     }
