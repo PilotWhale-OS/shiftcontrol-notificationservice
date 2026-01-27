@@ -31,7 +31,7 @@ public class RequestLeaveNotificationProcessor(
             "Leave Request",
             $"{volunteer.Volunteer.FirstName} {volunteer.Volunteer.LastName} wants to leave slot '{eventData.PositionSlot.PositionSlotName}'!",
             date,
-            appLinkService.BuildPlanAssignmentRequestsPageUrl(
+            appLinkService.BuildPlanUnassignmentRequestsPageUrl(
                 eventData.PositionSlot.ShiftPlanRefPart.EventRefPart.Id.ToString(),
                 eventData.PositionSlot.PositionSlotId.ToString()
             ));

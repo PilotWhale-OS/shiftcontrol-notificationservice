@@ -52,7 +52,7 @@ public class PlannerJoinedPlanNotificationProcessor(
             recipients.Select(rec => new EmailRecipientInfo(rec.Email, rec.Volunteer.FirstName, rec.Volunteer.LastName)).ToList(),
             $"{eventData.ShiftPlan.Name}: New Planner Joined",
             $"{joinedVolunteer.Volunteer.FirstName} {joinedVolunteer.Volunteer.LastName} has joined the shift plan '{eventData.ShiftPlan.Name}' in the event '{eventData.ShiftPlan.EventRefPart.Name}'." +
-            $"You can manage the volunteer access here: {appLinkService.BuildVolunteerPlansPageUrl(joinedVolunteer.Volunteer.Id)}"
+            $"You can manage the volunteer access here: {appLinkService.BuildVolunteerPlansPageUrl(joinedVolunteer.Volunteer.Id, LinkMode.Absolute)}"
         );
     }
 }
