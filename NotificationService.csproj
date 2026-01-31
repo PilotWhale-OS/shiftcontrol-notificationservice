@@ -31,6 +31,11 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".githooks\commit-msg" />
+      <Content Include=".githooks\pre-commit" />
+    </ItemGroup>
+
     <Target Name="GenerateShifterviceClient" BeforeTargets="BeforeCompile" Condition="'$(GenerateApiClient)' == 'true'">
         <Exec Command="nswag openapi2csclient /input:http://shiftservice.127.0.0.1.nip.io/v3/api-docs /output:Generated/ShiftserviceClient.cs /namespace:NotificationService.ShiftserviceClient" />
         <ItemGroup>
