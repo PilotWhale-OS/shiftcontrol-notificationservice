@@ -5,7 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <GenerateApiClient>false</GenerateApiClient>
+        <!--<GenerateApiClient>false</GenerateApiClient>-->
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,22 +24,24 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="TypedSignalR.Client.TypeScript.Attributes" Version="1.14.0" />
-        <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
+        <!--<PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
         <PackageReference Include="NSwag.MSBuild" Version="14.4.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        </PackageReference>-->
     </ItemGroup>
 
     <ItemGroup>
       <Content Include=".githooks\commit-msg" />
       <Content Include=".githooks\pre-commit" />
+      <Content Include=".github\workflows\build.yml" />
+      <Content Include=".github\workflows\release.yml" />
     </ItemGroup>
 
-    <Target Name="GenerateShifterviceClient" BeforeTargets="BeforeCompile" Condition="'$(GenerateApiClient)' == 'true'">
+    <!--<Target Name="GenerateShifterviceClient" BeforeTargets="BeforeCompile" Condition="'$(GenerateApiClient)' == 'true'">
         <Exec Command="nswag openapi2csclient /input:http://shiftservice.127.0.0.1.nip.io/v3/api-docs /output:Generated/ShiftserviceClient.cs /namespace:NotificationService.ShiftserviceClient" />
         <ItemGroup>
             <Compile Include="Generated/ShiftserviceClient.cs" />
         </ItemGroup>
-    </Target>
+    </Target>-->
 </Project>

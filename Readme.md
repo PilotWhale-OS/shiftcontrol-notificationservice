@@ -8,3 +8,9 @@
 - DTOs that are used need the TranspilationSource attribute
 - Hubs are registered in Program.cs
 - Services need to be registered in Program.cs
+
+## Code Generation
+Event Classes and Shiftservice clients are generated using codegen tools, packaged in a docker compose for convenience:
+```
+docker compose -f scripts\scripts.compose.yml up --build
+```
