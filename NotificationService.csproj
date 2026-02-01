@@ -35,6 +35,7 @@
       <Content Include=".githooks\commit-msg" />
       <Content Include=".githooks\pre-commit" />
       <Content Include=".github\workflows\build.yml" />
+      <Content Include=".github\workflows\release.yml" />
     </ItemGroup>
 
     <!--<Target Name="GenerateShifterviceClient" BeforeTargets="BeforeCompile" Condition="'$(GenerateApiClient)' == 'true'">

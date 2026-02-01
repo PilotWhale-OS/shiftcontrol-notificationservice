@@ -1,0 +1,54 @@
+name: Release Typescript Client
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set short SHA
+        run: echo "COMMIT_SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Generate Code
+        run: |
+          docker compose -f scripts/scripts.compose.yml up --build
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+    
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build All
+        run: dotnet build --no-restore
+
+      - run: dotnet tool install --global TypedSignalR.Client.TypeScript.Generator
+
+      - run: dotnet tsrts --project ./NotificationService.csproj --output ./generated
+
+      - name: Zip generated files
+        run: |
+          cd generated
+          zip -r ../notificationservice-ts-client.zip .
+          cd ..
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.COMMIT_SHORT_SHA }}
+          name: shiftcontrol-java-backend-${{ env.COMMIT_SHORT_SHA }}
+          files: ./notificationservice-ts-client.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
