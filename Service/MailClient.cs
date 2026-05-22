@@ -16,9 +16,15 @@ public class MailClient(
     private readonly SmtpClient _client = new ();
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (emailSettings.Value.EnableSending == false)
+        {
+            logger.LogWarning("Email sending is disabled. Mail client will not connect to SMTP server.");
+            return;
+        }
+        
         try
         {
-            await _client!.ConnectAsync(emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls, cancellationToken);
+            await _client.ConnectAsync(emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls, cancellationToken);
             await _client.AuthenticateAsync(emailSettings.Value.SmtpUsername, emailSettings.Value.SmtpPassword, cancellationToken);
             logger.LogInformation("Connected to SMTP server at {SmtpHost}:{SmtpPort}", emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort);
         }
@@ -42,6 +48,12 @@ public class MailClient(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
+        if(emailSettings.Value.EnableSending == false)
+        {
+            logger.LogWarning("Email sending is disabled. Mail client was not connected to SMTP server.");
+            return;
+        }
+        
         await _client.DisconnectAsync(true, cancellationToken);
         _client.Dispose();
         logger.LogInformation("Disconnected from SMTP server.");
