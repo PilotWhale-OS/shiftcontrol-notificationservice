@@ -1,3 +1,7 @@
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using NotificationService.Settings;
 using NotificationService.ShiftserviceClient;
@@ -8,52 +12,69 @@ public class ShiftserviceApiClientService(
     ILogger<ShiftserviceApiClientService> logger,
     HttpClient httpClient,
     IOptions<ShiftserviceSettings> apiOptions,
-    KeycloakService keycloakService
-    )
+    OAuthClientCredentialsTokenService tokenService)
 {
-    private ShiftserviceClient.Client? _client = null;
-
-    public async Task<ShiftserviceClient.Client> GetClient()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        if (_client is not null)
-        {
-            return _client;
-        }
-
-        var keycloakToken = await keycloakService.ObtainToken();
-
-        // set auth header for all requests using this instance
-        httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", keycloakToken);
-
-        var baseUrl = apiOptions.Value.BaseUrl;
-        if (string.IsNullOrEmpty(baseUrl))
-        {
-            throw new InvalidOperationException("Shiftservice API base URL is not configured.");
-        }
-
-        var apiClient = new ShiftserviceClient.Client(httpClient)
-        {
-            BaseUrl = baseUrl,
-            ReadResponseAsString = false
-        };
-
-        _client = apiClient;
-        return apiClient;
-    }
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     public async Task<ICollection<AccountInfoDto>> GetRecipientsForNotificationAsync(
         RecipientsFilterDto filterDto)
     {
-        var client = await GetClient();
-        var response = await client.GetRecipientsForNotificationAsync(filterDto);
+        var response = await SendAsync<RecipientsDto>(HttpMethod.Get, "api/v1/me/recipients", filterDto);
         return response.Recipients;
     }
 
-    public async Task<AccountInfoDto> GetRecipientInfoAsync(string accountId)
+    public Task<AccountInfoDto> GetRecipientInfoAsync(string accountId)
     {
-        var client = await GetClient();
-        var response = await client.GetRecipientInformationAsync(accountId);
-        return response;
+        return SendAsync<AccountInfoDto>(HttpMethod.Get, $"api/v1/me/recipients/{Uri.EscapeDataString(accountId)}");
+    }
+
+    private async Task<T> SendAsync<T>(HttpMethod method, string relativeUrl, object? body = null)
+    {
+        EnsureBaseAddressConfigured();
+
+        using var request = new HttpRequestMessage(method, relativeUrl);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await tokenService.ObtainToken());
+
+        if (body is not null)
+        {
+            request.Content = JsonContent.Create(body, options: JsonOptions);
+        }
+
+        using var response = await httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Content.ReadAsStringAsync();
+            logger.LogError(
+                "Shiftservice request to {Url} failed with status {StatusCode}: {Body}",
+                request.RequestUri,
+                (int)response.StatusCode,
+                responseBody);
+            response.EnsureSuccessStatusCode();
+        }
+
+        var payload = await response.Content.ReadFromJsonAsync<T>(JsonOptions);
+        return payload ?? throw new InvalidOperationException($"Shiftservice response for '{relativeUrl}' was empty.");
+    }
+
+    private void EnsureBaseAddressConfigured()
+    {
+        if (httpClient.BaseAddress is not null)
+        {
+            return;
+        }
+
+        var baseUrl = apiOptions.Value.BaseUrl;
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException("Shiftservice API base URL is not configured.");
+        }
+
+        httpClient.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
     }
 }

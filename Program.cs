@@ -1,6 +1,7 @@
-﻿﻿using System.Globalization;
- using System.Threading.Channels;
- using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Globalization;
+using System.Threading.Channels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using NotificationService.Classes;
 using NotificationService.Database;
 using NotificationService.Hubs.Implementation;
@@ -16,6 +17,7 @@ namespace NotificationService;
 class Program
 {
     private const string HubPrefix = "/hubs";
+
     static async Task Main(string[] args)
     {
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -30,61 +32,82 @@ class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services
-            .AddLogging(loggingBuilder => loggingBuilder
-                .AddConfiguration(builder.Configuration.GetSection("Logging"))
-                .AddConsole())
-            .AddCors()
-            .AddHttpClient()
-            .AddHttpClient<ShiftserviceApiClientService>().Services
-            .AddSignalR().Services
-            .Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"))
-            .Configure<DbSettings>(builder.Configuration.GetSection("Db"))
-            .Configure<KeycloakSettings>(builder.Configuration.GetSection("Keycloak"))
-            .Configure<ShiftserviceSettings>(builder.Configuration.GetSection("Shiftservice"))
-            .Configure<FrontendSettings>(builder.Configuration.GetSection("Frontend"))
-            .Configure<EmailSettings>(builder.Configuration.GetSection("Email"))
-            .AddDbContext<NotificationServiceDbContext>()
-            .AddNotificationProcessors(pb => pb
-                // ADMIN
-                .AddProcessor<ShiftPlanVolunteerEvent, PlannerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.planner.#")
-                .AddProcessor<TrustAlertEvent, TrustAlertNotificationProcessor>("shiftcontrol.trustalert.received.#")
-                // PLANNER
-                .AddProcessor<PositionSlotVolunteerEvent, RequestJoinNotificationProcessor>("shiftcontrol.positionslot.request.join.created.#")
-                .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveNotificationProcessor>("shiftcontrol.positionslot.request.leave.created.#")
-                .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
-                // VOLUNTEER
-                .AddProcessor<ClaimedAuctionEvent, AuctionClaimedNotificationProcessor>("shiftcontrol.auction.claimed.#")
-                .AddProcessor<UserEventBulkEvent, EventBulkAddNotificationProcessor>("shiftcontrol.users.bulk.add")
-                .AddProcessor<UserEventBulkEvent, EventBulkRemoveNotificationProcessor>("shiftcontrol.users.bulk.remove")
-                .AddProcessor<UserEvent, EventBulkUpdateNotificationProcessor>("shiftcontrol.users.#.update")
-                .AddProcessor<UserPlanBulkEvent, PlanBulkAddNotificationProcessor>("shiftcontrol.shift-plans.#.users.bulk.add")
-                .AddProcessor<UserPlanBulkEvent, PlanBulkRemoveNotificationProcessor>("shiftcontrol.shift-plans.#.users.bulk.remove")
-                .AddProcessor<UserEvent, PlanBulkUpdateNotificationProcessor>("shiftcontrol.shift-plans.#.users.#")
-                .AddProcessor<PositionSlotVolunteerEvent, RequestJoinAcceptedNotificationProcessor>("shiftcontrol.positionslot.request.join.accepted.#")
-                .AddProcessor<PositionSlotVolunteerEvent, RequestJoinDeclinedNotificationProcessor>("shiftcontrol.positionslot.request.join.declined.#")
-                .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveAcceptedNotificationProcessor>("shiftcontrol.positionslot.request.leave.accepted.#")
-                .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveDeclinedNotificationProcessor>("shiftcontrol.positionslot.request.leave.declined.#")
-                .AddProcessor<RoleVolunteerEvent, RoleAssignedNotificationProcessor>("shiftcontrol.role.assigned.#")
-                .AddProcessor<RoleVolunteerEvent, RoleUnassignedNotificationProcessor>("shiftcontrol.role.unassigned.#")
-                .AddProcessor<AssignmentSwitchEvent, TradeCompletedNotificationProcessor>("shiftcontrol.trade.request.completed.#")
-                .AddProcessor<TradeEvent, TradeCreatedNotificationProcessor>("shiftcontrol.trade.request.created.#")
-                .AddProcessor<TradeEvent, TradeDeclinedNotificationProcessor>("shiftcontrol.trade.request.declined.#")
-                .AddProcessor<UserEvent, UserLockNotificationProcessor>("shiftcontrol.users.#.lock")
-                .AddProcessor<UserEvent, UserResetNotificationProcessor>("shiftcontrol.users.#.unlock")
-                .AddProcessor<UserEvent, UserUnlockNotificationProcessor>("shiftcontrol.users.#.reset")
-                .Build()
-            )
-            .AddSingleton<KeycloakService>()
-            .AddSingleton<AppLinkService>()
-            .AddScoped<PushNotificationService>()
-            .AddScoped<EventProcessorService>()
-            .AddScoped<ShiftserviceApiClientService>()
-            .AddScoped<MailService>()
-            .AddSingleton(Channel.CreateUnbounded<EmailNotification>())
-            .AddHostedService<RabbitMqService>()
-            .AddHostedService<MailClient>()
-            .BuildServiceProvider();
+        builder.Services.AddLogging(loggingBuilder => loggingBuilder
+            .AddConfiguration(builder.Configuration.GetSection("Logging"))
+            .AddConsole());
+        builder.Services.AddCors();
+        builder.Services.AddHttpClient();
+        builder.Services.AddHttpClient<ShiftserviceApiClientService>((serviceProvider, client) =>
+        {
+            var settings = serviceProvider.GetRequiredService<IOptions<ShiftserviceSettings>>().Value;
+            if (!string.IsNullOrWhiteSpace(settings.BaseUrl))
+            {
+                client.BaseAddress = new Uri(settings.BaseUrl, UriKind.Absolute);
+            }
+        });
+        builder.Services.AddSignalR();
+        builder.Services.Configure<RabbitMqSettings>(builder.Configuration.GetSection("RabbitMQ"));
+        builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("Db"));
+        builder.Services.Configure<ShiftserviceSettings>(builder.Configuration.GetSection("Shiftservice"));
+        builder.Services.Configure<FrontendSettings>(builder.Configuration.GetSection("Frontend"));
+        builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+        builder.Services.AddOptions<OAuthClientCredentialsSettings>()
+            .Configure<IConfiguration>((settings, configuration) =>
+            {
+                configuration.GetSection("OAuth2:Client").Bind(settings);
+
+                if (string.IsNullOrWhiteSpace(settings.TokenUrl))
+                {
+                    var legacyBaseUrl = configuration["Keycloak:BaseUrl"];
+                    var legacyRealm = configuration["Keycloak:Realm"];
+                    if (!string.IsNullOrWhiteSpace(legacyBaseUrl) && !string.IsNullOrWhiteSpace(legacyRealm))
+                    {
+                        settings.TokenUrl = BuildLegacyTokenUrl(legacyBaseUrl, legacyRealm);
+                    }
+                }
+
+                settings.ClientId ??= configuration["Keycloak:ClientId"];
+                settings.ClientSecret ??= configuration["Keycloak:ClientSecret"];
+                settings.Scope ??= configuration["Keycloak:Scope"];
+            });
+        builder.Services.AddDbContext<NotificationServiceDbContext>();
+        builder.Services.AddNotificationProcessors(pb => pb
+            // ADMIN
+            .AddProcessor<ShiftPlanVolunteerEvent, PlannerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.planner.#")
+            .AddProcessor<TrustAlertEvent, TrustAlertNotificationProcessor>("shiftcontrol.trustalert.received.#")
+            // PLANNER
+            .AddProcessor<PositionSlotVolunteerEvent, RequestJoinNotificationProcessor>("shiftcontrol.positionslot.request.join.created.#")
+            .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveNotificationProcessor>("shiftcontrol.positionslot.request.leave.created.#")
+            .AddProcessor<ShiftPlanVolunteerEvent, VolunteerJoinedPlanNotificationProcessor>("shiftcontrol.shiftplan.joined.volunteer.#")
+            // VOLUNTEER
+            .AddProcessor<ClaimedAuctionEvent, AuctionClaimedNotificationProcessor>("shiftcontrol.auction.claimed.#")
+            .AddProcessor<UserEventBulkEvent, EventBulkAddNotificationProcessor>("shiftcontrol.users.bulk.add")
+            .AddProcessor<UserEventBulkEvent, EventBulkRemoveNotificationProcessor>("shiftcontrol.users.bulk.remove")
+            .AddProcessor<UserEvent, EventBulkUpdateNotificationProcessor>("shiftcontrol.users.#.update")
+            .AddProcessor<UserPlanBulkEvent, PlanBulkAddNotificationProcessor>("shiftcontrol.shift-plans.#.users.bulk.add")
+            .AddProcessor<UserPlanBulkEvent, PlanBulkRemoveNotificationProcessor>("shiftcontrol.shift-plans.#.users.bulk.remove")
+            .AddProcessor<UserEvent, PlanBulkUpdateNotificationProcessor>("shiftcontrol.shift-plans.#.users.#")
+            .AddProcessor<PositionSlotVolunteerEvent, RequestJoinAcceptedNotificationProcessor>("shiftcontrol.positionslot.request.join.accepted.#")
+            .AddProcessor<PositionSlotVolunteerEvent, RequestJoinDeclinedNotificationProcessor>("shiftcontrol.positionslot.request.join.declined.#")
+            .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveAcceptedNotificationProcessor>("shiftcontrol.positionslot.request.leave.accepted.#")
+            .AddProcessor<PositionSlotVolunteerEvent, RequestLeaveDeclinedNotificationProcessor>("shiftcontrol.positionslot.request.leave.declined.#")
+            .AddProcessor<RoleVolunteerEvent, RoleAssignedNotificationProcessor>("shiftcontrol.role.assigned.#")
+            .AddProcessor<RoleVolunteerEvent, RoleUnassignedNotificationProcessor>("shiftcontrol.role.unassigned.#")
+            .AddProcessor<AssignmentSwitchEvent, TradeCompletedNotificationProcessor>("shiftcontrol.trade.request.completed.#")
+            .AddProcessor<TradeEvent, TradeCreatedNotificationProcessor>("shiftcontrol.trade.request.created.#")
+            .AddProcessor<TradeEvent, TradeDeclinedNotificationProcessor>("shiftcontrol.trade.request.declined.#")
+            .AddProcessor<UserEvent, UserLockNotificationProcessor>("shiftcontrol.users.#.lock")
+            .AddProcessor<UserEvent, UserResetNotificationProcessor>("shiftcontrol.users.#.unlock")
+            .AddProcessor<UserEvent, UserUnlockNotificationProcessor>("shiftcontrol.users.#.reset")
+            .Build());
+        builder.Services.AddSingleton<OAuthClientCredentialsTokenService>();
+        builder.Services.AddSingleton<AppLinkService>();
+        builder.Services.AddScoped<PushNotificationService>();
+        builder.Services.AddScoped<EventProcessorService>();
+        builder.Services.AddScoped<MailService>();
+        builder.Services.AddSingleton(Channel.CreateUnbounded<EmailNotification>());
+        builder.Services.AddHostedService<RabbitMqService>();
+        builder.Services.AddHostedService<MailClient>();
 
         builder.WebHost.ConfigureKestrel(options =>
         {
@@ -139,12 +162,7 @@ class Program
     private static void SetupRoutes(WebApplication app)
     {
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-        var kc = app.Services
-            .GetRequiredService<KeycloakService>();
-        var token = kc.ObtainToken().Result;
-        logger.LogInformation("Obtained Keycloak token: {token}", token);
-
+        logger.LogInformation("Notificationservice routes configured.");
 
         app.MapHub<PushNotificationHub>(HubPrefix + "/push");
 
@@ -159,5 +177,11 @@ class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+    }
+
+    private static string BuildLegacyTokenUrl(string baseUrl, string realm)
+    {
+        var normalizedBaseUrl = baseUrl.Trim().TrimEnd('/');
+        return $"{normalizedBaseUrl}/realms/{realm.Trim()}/protocol/openid-connect/token";
     }
 }

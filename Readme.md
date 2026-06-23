@@ -10,7 +10,9 @@
 - Services need to be registered in Program.cs
 
 ## Code Generation
-Event Classes and Shiftservice clients are generated using codegen tools, packaged in a docker compose for convenience:
+Event classes are generated using codegen tools, packaged in a docker compose for convenience:
 ```
 docker compose -f scripts\scripts.compose.yml up --build
 ```
+
+The shiftservice integration now uses a small handwritten HTTP contract for the recipient lookup endpoints instead of a generated client.

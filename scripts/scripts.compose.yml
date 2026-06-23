@@ -8,12 +8,3 @@ services:
       - ../Generated:/out
     environment:
       SCHEMA_URL: https://github.com/PilotWhale-OS/shiftcontrol-java-backend/releases/latest/download/json-event-schemas.tar.gz
-
-  api-client-generator:
-    restart: no
-    build:
-      dockerfile: client.Dockerfile
-    volumes:
-      - ../Generated:/out
-    environment:
-      SCHEMA_URL: https://github.com/PilotWhale-OS/shiftcontrol-java-backend/releases/latest/download/shiftservice-openapi.json
