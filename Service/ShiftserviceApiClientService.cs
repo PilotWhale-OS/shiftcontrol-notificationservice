@@ -36,10 +36,17 @@ public class ShiftserviceApiClientService(
 
     private async Task<T> SendAsync<T>(HttpMethod method, string relativeUrl, object? body = null)
     {
-        EnsureBaseAddressConfigured();
+        var settings = EnsureBaseAddressConfigured();
 
         using var request = new HttpRequestMessage(method, relativeUrl);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await tokenService.ObtainToken());
+        if (!string.IsNullOrWhiteSpace(settings.ApiKey))
+        {
+            request.Headers.Add("X-ShiftControl-Internal-Api-Key", settings.ApiKey.Trim());
+        }
+        else
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await tokenService.ObtainToken());
+        }
 
         if (body is not null)
         {
@@ -62,19 +69,21 @@ public class ShiftserviceApiClientService(
         return payload ?? throw new InvalidOperationException($"Shiftservice response for '{relativeUrl}' was empty.");
     }
 
-    private void EnsureBaseAddressConfigured()
+    private ShiftserviceSettings EnsureBaseAddressConfigured()
     {
+        var settings = apiOptions.Value;
         if (httpClient.BaseAddress is not null)
         {
-            return;
+            return settings;
         }
 
-        var baseUrl = apiOptions.Value.BaseUrl;
+        var baseUrl = settings.BaseUrl;
         if (string.IsNullOrWhiteSpace(baseUrl))
         {
             throw new InvalidOperationException("Shiftservice API base URL is not configured.");
         }
 
         httpClient.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
+        return settings;
     }
 }
