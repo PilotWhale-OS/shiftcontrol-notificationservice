@@ -48,7 +48,10 @@
     "EnableSending": false,
     "SmtpHost": "smtp.gmail.com",
     "SmtpPort": 587,
-    "SmtpUsername": "0tobibot0@gmail.com",
-    "SmtpPassword": "bftu xhsc daue vibm"
+    "SmtpUsername": "notifications@example.com",
+    "SmtpPassword": "change-me",
+    "FromName": "ShiftControl Notifications",
+    "FromEmail": "noreply@example.com",
+    "SecureSocketOptions": "StartTls"
   }
 }

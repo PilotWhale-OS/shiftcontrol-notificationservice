@@ -1,5 +1,6 @@
 using System.Threading.Channels;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using NotificationService.Classes;
@@ -16,21 +17,37 @@ public class MailClient(
     private readonly SmtpClient _client = new ();
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (emailSettings.Value.EnableSending == false)
+        var settings = emailSettings.Value;
+        if (settings.EnableSending == false)
         {
             logger.LogWarning("Email sending is disabled. Mail client will not connect to SMTP server.");
             return;
         }
-        
+
         try
         {
-            await _client.ConnectAsync(emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls, cancellationToken);
-            await _client.AuthenticateAsync(emailSettings.Value.SmtpUsername, emailSettings.Value.SmtpPassword, cancellationToken);
-            logger.LogInformation("Connected to SMTP server at {SmtpHost}:{SmtpPort}", emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort);
+            await _client.ConnectAsync(settings.SmtpHost, settings.SmtpPort, settings.SecureSocketOptions, cancellationToken);
+
+            if (HasSmtpCredentials(settings))
+            {
+                EnsureValidSmtpCredentials(settings);
+                await _client.AuthenticateAsync(settings.SmtpUsername, settings.SmtpPassword, cancellationToken);
+            }
+            else
+            {
+                logger.LogInformation("SMTP authentication is disabled because no username/password were configured.");
+            }
+
+            logger.LogInformation(
+                "Connected to SMTP server at {SmtpHost}:{SmtpPort} using {SecureSocketOptions}",
+                settings.SmtpHost,
+                settings.SmtpPort,
+                settings.SecureSocketOptions
+            );
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to connect to SMTP server at {SmtpHost}:{SmtpPort}", emailSettings.Value.SmtpHost, emailSettings.Value.SmtpPort);
+            logger.LogError(ex, "Failed to connect to SMTP server at {SmtpHost}:{SmtpPort}", settings.SmtpHost, settings.SmtpPort);
             throw;
         }
 
@@ -48,12 +65,12 @@ public class MailClient(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if(emailSettings.Value.EnableSending == false)
+        if (emailSettings.Value.EnableSending == false)
         {
             logger.LogWarning("Email sending is disabled. Mail client was not connected to SMTP server.");
             return;
         }
-        
+
         await _client.DisconnectAsync(true, cancellationToken);
         _client.Dispose();
         logger.LogInformation("Disconnected from SMTP server.");
@@ -86,8 +103,9 @@ public class MailClient(
 
     private MimeMessage BuildMail(EmailNotification notification)
     {
+        var settings = emailSettings.Value;
         var mailMessage = new MimeMessage();
-        mailMessage.From.Add(new MailboxAddress("ShiftControl Notifications", "noreply@shiftcontrol.com"));
+        mailMessage.From.Add(new MailboxAddress(settings.FromName, settings.FromEmail));
         foreach (var recipient in notification.Recipients)
         {
             mailMessage.To.Add(new MailboxAddress($@"{recipient.FirstName} {recipient.LastName}", recipient.Email));
@@ -99,5 +117,24 @@ public class MailClient(
         };
 
         return mailMessage;
+    }
+
+    private static bool HasSmtpCredentials(EmailSettings settings)
+    {
+        return string.IsNullOrWhiteSpace(settings.SmtpUsername) == false
+            || string.IsNullOrWhiteSpace(settings.SmtpPassword) == false;
+    }
+
+    private static void EnsureValidSmtpCredentials(EmailSettings settings)
+    {
+        var hasUsername = string.IsNullOrWhiteSpace(settings.SmtpUsername) == false;
+        var hasPassword = string.IsNullOrWhiteSpace(settings.SmtpPassword) == false;
+
+        if (hasUsername && hasPassword)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException("Both Email:SmtpUsername and Email:SmtpPassword must be set when SMTP authentication is enabled.");
     }
 }
